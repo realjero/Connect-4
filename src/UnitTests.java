@@ -73,4 +73,32 @@ class UnitTests {
 
         assertEquals(true, VierGewinnt.of(board).isGameOver());
     }
+
+    @Test
+    void testGetAvailableMoves() {
+        int[] board = new int[]{1, 2, 1, 2, 1, 0, 2,
+                1, 2, 1, 1, 1, 2, 1,
+                2, 1, 2, 2, 2, 1, 2,
+                1, 2, 1, 1, 1, 2, 1,
+                2, 1, 2, 2, 2, 1, 2,
+                2, 1, 2, 1, 2, 1, 2};
+
+        assertEquals(1, VierGewinnt.of(board).getAvailableMoves(VierGewinnt.of(board)).size());
+    }
+
+    @Test
+    void testMiniMax() {
+        /*
+        int[] board = new int[]{1, 2, 1, 0, 0, 0, 0,
+                1, 2, 1, 1, 1, 2, 1,
+                2, 1, 2, 2, 2, 1, 2,
+                1, 2, 1, 1, 1, 2, 1,
+                2, 1, 2, 2, 2, 1, 2,
+                2, 1, 2, 1, 2, 1, 2};
+
+         */
+
+        VierGewinnt vg = new VierGewinnt();
+        vg.minimax(vg, 7, true);
+    }
 }
