@@ -1,43 +1,41 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class VierGewinnt implements VierGewinntLogic {
 
-    int[] board;
+    private int[] board;
 
     public VierGewinnt() {
         board = new int[COLUMNS * ROWS];
     }
 
     public VierGewinnt(int[] board) {
-        this.board = board;
+        this.board = Arrays.copyOf(board, board.length);
     }
 
     public static VierGewinnt of(int[] board) {
         return new VierGewinnt(board);
     }
 
+    //Start of Logic
     @Override
     public VierGewinnt playMove(int column, boolean turn) {
-        VierGewinnt newBoard = this;
+        VierGewinnt vg = VierGewinnt.of(board);
 
         if (column < 0 || column >= COLUMNS) throw new IllegalArgumentException("Column out of bounds");
-        if (newBoard.getBoard(column, 0) != 0) throw new IllegalArgumentException("Column is full");
+        if (vg.getBoard(column, 0) != 0) throw new IllegalArgumentException("Column is full");
 
         if (!isGameOver()) {
             for (int row = ROWS - 1; row >= 0; row--) {
-                if (newBoard.getBoard(column, row) == 0) {
-                    newBoard.board[row * COLUMNS + column] = turn ? 1 : 2;
+                if (vg.getBoard(column, row) == 0) {
+                    vg.board[row * COLUMNS + column] = turn ? 1 : 2;
                     break;
                 }
             }
         }
 
-        return newBoard;
-    }
-
-    @Override
-    public int bestMove() {
-        return 0;
+        return vg;
     }
 
     @Override
@@ -144,7 +142,48 @@ public class VierGewinnt implements VierGewinntLogic {
 
         return false;
     }
+    //End of Logic
 
+    //Start of Algorithm
+    @Override
+    public int bestMove() {
+        return 0;
+    }
+
+
+    public int minimax(VierGewinnt v, int depth, boolean turn) {
+
+        //Abbruchbedingung
+        if(depth == 0 || v.isGameOver()) {
+            return 1;
+        }
+
+
+        //Gehe alle Moves in jedem Spiel durch
+        for(Integer m : getAvailableMoves(v)) {
+            System.out.println(v.playMove(m, turn));
+            minimax(v.playMove(m, turn), depth - 1, !turn);
+        }
+
+
+
+        return 0;
+    }
+
+    public List<Integer> getAvailableMoves(VierGewinnt vg) {
+        List<Integer> moveList = new ArrayList<>();
+        for(int column = 0; column < COLUMNS; column++) {
+            if(vg.getBoard(column, 0) == 0) {
+                moveList.add(column);
+            }
+        }
+
+        return moveList;
+    }
+    //End of Algorithm
+
+
+    //Getter
     @Override
     public int getBoard(int column, int row) {
         if (row < 0 || row >= ROWS) throw new IllegalArgumentException("Row out of bounds");
@@ -164,4 +203,5 @@ public class VierGewinnt implements VierGewinntLogic {
         }
         return sb.toString();
     }
+    //End of Getter
 }
