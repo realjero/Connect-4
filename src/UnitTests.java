@@ -1,7 +1,6 @@
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.util.StringUtils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class UnitTests {
 
@@ -14,7 +13,7 @@ class UnitTests {
                 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0};
-        assertEquals(false, VierGewinnt.of(board).isGameOver());
+        assertFalse(VierGewinnt.of(board).isGameOver());
 
         //Volles Spielfeld -> Spiel beendet
         int[] board1 = new int[]{1, 2, 1, 2, 1, 2, 1,
@@ -23,7 +22,7 @@ class UnitTests {
                 1, 2, 1, 1, 1, 2, 1,
                 2, 1, 2, 2, 2, 1, 2,
                 2, 1, 2, 1, 2, 1, 2};
-        assertEquals(true, VierGewinnt.of(board1).isGameOver());
+        assertTrue(VierGewinnt.of(board1).isGameOver());
 
         testGameOverHori();
         testGameOverVert();
@@ -32,47 +31,47 @@ class UnitTests {
     }
 
     void testGameOverHori() {
-        int board[] = {0, 0, 0, 0, 0, 0, 0,
+        int[] board = {0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0,
                 1, 1, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 1, 1, 1,
                 1, 1, 1, 1, 0, 0, 0};
 
-        assertEquals(true, VierGewinnt.of(board).isGameOver());
+        assertTrue(VierGewinnt.of(board).isGameOver());
     }
 
     void testGameOverVert() {
-        int board[] = {0, 1, 1, 0, 0, 0, 0,
+        int[] board = {0, 1, 1, 0, 0, 0, 0,
                 0, 0, 1, 1, 0, 0, 0,
                 0, 1, 0, 0, 0, 0, 0,
                 0, 1, 0, 0, 0, 0, 0,
                 0, 1, 1, 0, 0, 0, 0,
                 0, 1, 1, 0, 0, 0, 0};
 
-        assertEquals(true, VierGewinnt.of(board).isGameOver());
+        assertTrue(VierGewinnt.of(board).isGameOver());
     }
 
     void testGameOverDiag1() {
-        int board[] = {1, 0, 1, 0, 0, 0, 0,
+        int[] board = {1, 0, 1, 0, 0, 0, 0,
                 0, 1, 0, 0, 0, 0, 0,
                 0, 0, 1, 0, 0, 0, 0,
                 0, 0, 0, 1, 1, 0, 0,
                 0, 0, 0, 1, 0, 1, 0,
                 0, 0, 0, 0, 1, 0, 1};
 
-        assertEquals(true, VierGewinnt.of(board).isGameOver());
+        assertTrue(VierGewinnt.of(board).isGameOver());
     }
 
     void testGameOverDiag2() {
-        int board[] = {0, 1, 0, 1, 0, 1, 0,
+        int[] board = {0, 1, 0, 1, 0, 1, 0,
                        0, 0, 0, 1, 1, 1, 0,
                        0, 0, 0, 0, 0, 0, 0,
                        0, 0, 1, 0, 0, 0, 0,
                        0, 1, 1, 1, 0, 0, 0,
                        1, 1, 1, 0, 0, 0, 0};
 
-        assertEquals(false, VierGewinnt.of(board).isGameOver());
+        assertFalse(VierGewinnt.of(board).isGameOver());
     }
 
     @Test
@@ -105,6 +104,9 @@ class UnitTests {
 
     @Test
     void testCountPieces() {
-        assertEquals(2, VierGewinnt.countPiecesInOrder("1211212", 2, true));
+        assertEquals(2, VierGewinnt.countPiecesInOrder("1211211", 2, true));
+        assertEquals(1, VierGewinnt.countPiecesInOrder("11", 2, true));
+        assertEquals(1, VierGewinnt.countPiecesInOrder("22", 2, false));
+        assertEquals(1, VierGewinnt.countPiecesInOrder("12121212222", 4, false));
     }
 }
