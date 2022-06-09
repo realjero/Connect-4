@@ -43,13 +43,19 @@ public class VierGewinnt implements VierGewinntLogic {
         return Arrays.stream(board).allMatch(i -> i != 0) || checkForWin();
     }
 
+    //  |  |
+    //001111222
+    public static int countPiecesInOrder(String order, int amount, boolean player) {
+        return 0;
+        //return StringUtils.countMatches(order, "11");
+    }
     private boolean checkForWin() {
         int last = 0;
         int count = 0;
 
         //check for horizontal win
-        for(int r = 0; r < ROWS; r++) {
-            for(int c = 0; c < COLUMNS; c++) {
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLUMNS; c++) {
                 //Falls aktuelles Feld leer || letztes Feld ungleich dem jetzigen Feld
                 //Zurücksetzen des Counters & last
                 if (getBoard(c, r) == 0 || last != getBoard(c, r)) {
@@ -71,18 +77,22 @@ public class VierGewinnt implements VierGewinntLogic {
         }
 
         //check for vertical win
-        for(int c = 0; c < COLUMNS; c++) {
-            for(int r = 0; r < ROWS; r++) {
+        for (int c = 0; c < COLUMNS; c++) {
+            for (int r = 0; r < ROWS; r++) {
+                //Falls aktuelles Feld leer || letztes Feld ungleich dem jetzigen Feld
+                //Zurücksetzen des Counters & last
                 if (getBoard(c, r) == 0 || last != getBoard(c, r)) {
                     count = 0;
                     last = 0;
                 }
 
+                //Zählen der einzelnen Felder
                 if (getBoard(c, r) != 0) {
                     count++;
                     last = getBoard(c, r);
                 }
 
+                //Wenn 4 Felder in in einer Folge gefunden wurden
                 if (count == 4) return true;
             }
             count = 0;
@@ -90,55 +100,58 @@ public class VierGewinnt implements VierGewinntLogic {
         }
 
         //check for diagonal win \
-        //based on formula: y = -1*(-x + b)
+        //based on formula: y = x - b
         for (int b = -ROWS + 1; b < COLUMNS; b++) {
             for (int x = 0; x < COLUMNS; x++) {
-                int y = -1 * (-x + b);
+                int y = x - b;
                 if (y >= 0 && y < ROWS) {
-                    //System.out.print(x + "=x " + y + "=y    ");
-                    //System.out.print(getBoard(x, y) + " ");
-
-
-                    //Counter for diagonals\
+                    //Counter for diagonals
+                    //Falls aktuelles Feld leer || letztes Feld ungleich dem jetzigen Feld
+                    //Zurücksetzen des Counters & last
                     if (getBoard(x, y) == 0 || last != getBoard(x, y)) {
                         count = 0;
                         last = 0;
                     }
 
+                    //Zählen der einzelnen Felder
                     if (getBoard(x, y) != 0) {
                         count++;
                         last = getBoard(x, y);
                     }
 
+                    //Wenn 4 Felder in in einer Folge gefunden wurden
                     if (count == 4) return true;
-
                 }
             }
             count = 0;
+            last = 0;
         }
 
-
         //check for diagonal win /
-        //based on formula: y = -1*(x + b)
+        //based on formula: y = -x - b
         for (int b = 0; b >= -(COLUMNS - 1) - (ROWS - 1); b--) {
             for (int x = 0; x < COLUMNS; x++) {
-                int y = -1 * (x + b);
+                int y = -x - b;
                 if (y >= 0 && y < ROWS) {
-                    //Counter for diagonals\
+                    //Falls aktuelles Feld leer || letztes Feld ungleich dem jetzigen Feld
+                    //Zurücksetzen des Counters & last
                     if (getBoard(x, y) == 0 || last != getBoard(x, y)) {
                         count = 0;
                         last = 0;
                     }
 
+                    //Zählen der einzelnen Felder
                     if (getBoard(x, y) != 0) {
                         count++;
                         last = getBoard(x, y);
                     }
 
+                    //Wenn 4 Felder in in einer Folge gefunden wurden
                     if (count == 4) return true;
                 }
             }
             count = 0;
+            last = 0;
         }
 
         return false;
@@ -152,17 +165,18 @@ public class VierGewinnt implements VierGewinntLogic {
     }
 
 
-    int count= 0;
+    int count = 0;
+
     public int minimax(VierGewinnt v, int depth, boolean turn) {
 
         //Abbruchbedingung
-        if(depth == 0 || v.isGameOver()) {
+        if (depth == 0 || v.isGameOver()) {
             return 1;
         }
 
 
         //Gehe alle Moves in jedem Spiel durch
-        for(Integer m : getAvailableMoves(v)) {
+        for (Integer m : getAvailableMoves(v)) {
             System.out.println(v.playMove(m, turn));
             count++;
             minimax(v.playMove(m, turn), depth - 1, !turn);
@@ -175,8 +189,8 @@ public class VierGewinnt implements VierGewinntLogic {
 
     public List<Integer> getAvailableMoves(VierGewinnt vg) {
         List<Integer> moveList = new ArrayList<>();
-        for(int column = 0; column < COLUMNS; column++) {
-            if(vg.getBoard(column, 0) == 0) {
+        for (int column = 0; column < COLUMNS; column++) {
+            if (vg.getBoard(column, 0) == 0) {
                 moveList.add(column);
             }
         }

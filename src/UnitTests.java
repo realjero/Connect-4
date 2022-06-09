@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -64,14 +65,14 @@ class UnitTests {
     }
 
     void testGameOverDiag2() {
-        int board[] = {0, 1, 0, 1, 0, 0, 0,
-                0, 0, 0, 1, 0, 1, 0,
-                0, 0, 0, 1, 0, 0, 0,
-                0, 0, 1, 0, 0, 0, 0,
-                0, 1, 0, 1, 0, 0, 0,
-                1, 0, 1, 0, 0, 0, 0};
+        int board[] = {0, 1, 0, 1, 0, 1, 0,
+                       0, 0, 0, 1, 1, 1, 0,
+                       0, 0, 0, 0, 0, 0, 0,
+                       0, 0, 1, 0, 0, 0, 0,
+                       0, 1, 1, 1, 0, 0, 0,
+                       1, 1, 1, 0, 0, 0, 0};
 
-        assertEquals(true, VierGewinnt.of(board).isGameOver());
+        assertEquals(false, VierGewinnt.of(board).isGameOver());
     }
 
     @Test
@@ -100,5 +101,10 @@ class UnitTests {
 
         VierGewinnt vg = new VierGewinnt();
         vg.minimax(vg, 7, true);
+    }
+
+    @Test
+    void testCountPieces() {
+        assertEquals(2, VierGewinnt.countPiecesInOrder("1211212", 2, true));
     }
 }
