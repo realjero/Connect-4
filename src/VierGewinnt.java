@@ -48,44 +48,45 @@ public class VierGewinnt implements VierGewinntLogic {
         int count = 0;
 
         //check for horizontal win
-        for (int i = 0; i < ROWS * COLUMNS; i++) {
+        for(int r = 0; r < ROWS; r++) {
+            for(int c = 0; c < COLUMNS; c++) {
+                //Falls aktuelles Feld leer || letztes Feld ungleich dem jetzigen Feld
+                //Zurücksetzen des Counters & last
+                if (getBoard(c, r) == 0 || last != getBoard(c, r)) {
+                    count = 0;
+                    last = 0;
+                }
 
-            //Falls aktuelles Feld leer || letztes Feld ungleich dem jetzigen Feld ||
-            //Zurücksetzen des Counters & last
-            if (board[i] == 0 || last != board[i] || i % COLUMNS == 0) {
-                count = 0;
-                last = 0;
+                //Zählen der einzelnen Felder
+                if (getBoard(c, r) != 0) {
+                    count++;
+                    last = getBoard(c, r);
+                }
+
+                //Wenn 4 Felder in in einer Folge gefunden wurden
+                if (count == 4) return true;
             }
-
-            //Zählen der einzelnen Felder
-            if (board[i] != 0) {
-                count++;
-                last = board[i];
-            }
-
-            //Wenn 4 Felder in in einer Folge gefunden wurden
-            if (count == 4) return true;
+            count = 0;
+            last = 0;
         }
 
         //check for vertical win
-        for (int i = 0; i < ROWS * COLUMNS; i++) {
+        for(int c = 0; c < COLUMNS; c++) {
+            for(int r = 0; r < ROWS; r++) {
+                if (getBoard(c, r) == 0 || last != getBoard(c, r)) {
+                    count = 0;
+                    last = 0;
+                }
 
-            //i horizontal to vertical j
-            //i % ROWS == iterate over rows
-            //i / ROWS == iterate over columns
-            int j = (i % ROWS) * COLUMNS + i / ROWS;
+                if (getBoard(c, r) != 0) {
+                    count++;
+                    last = getBoard(c, r);
+                }
 
-            if (board[j] == 0 || last != board[j] || i % ROWS == 0) {
-                count = 0;
-                last = 0;
+                if (count == 4) return true;
             }
-
-            if (board[j] != 0) {
-                count++;
-                last = board[j];
-            }
-
-            if (count == 4) return true;
+            count = 0;
+            last = 0;
         }
 
         //check for diagonal win \
@@ -151,6 +152,7 @@ public class VierGewinnt implements VierGewinntLogic {
     }
 
 
+    int count= 0;
     public int minimax(VierGewinnt v, int depth, boolean turn) {
 
         //Abbruchbedingung
@@ -162,10 +164,11 @@ public class VierGewinnt implements VierGewinntLogic {
         //Gehe alle Moves in jedem Spiel durch
         for(Integer m : getAvailableMoves(v)) {
             System.out.println(v.playMove(m, turn));
+            count++;
             minimax(v.playMove(m, turn), depth - 1, !turn);
         }
 
-
+        System.out.println("Count: " + count);
 
         return 0;
     }
