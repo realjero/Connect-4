@@ -70,7 +70,7 @@ public class VierGewinntGUI extends PApplet {
         for(int i = 0; i < VierGewinntLogic.COLUMNS; i++) {
             if(mouseX > i * 100 && mouseX < (i + 1) * 100) {
                 try {
-                    vg.playMove(i, player);
+                    vg = vg.playMove(i, player);
                     player = !player;
                 } catch (IllegalArgumentException e) {
                     System.out.println(e.getMessage());

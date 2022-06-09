@@ -14,7 +14,7 @@ public class Main {
         while (!vg.isGameOver()) {
             System.out.println(vg);
             System.out.print("\nSpalte (0-6): ");
-            vg.playMove(scanner.nextInt(), player);
+            vg = vg.playMove(scanner.nextInt(), player);
             player = !player;
         }
 
