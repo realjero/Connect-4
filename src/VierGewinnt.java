@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class VierGewinnt implements VierGewinntLogic {
 
-    int board[];
+    int[] board;
 
     public VierGewinnt() {
         board = new int[COLUMNS * ROWS];
