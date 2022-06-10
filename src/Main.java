@@ -1,9 +1,10 @@
 
+import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        new Main().startGame();
+        System.out.println(new Main().testGames(100) + "% Winrate");
     }
 
     public void startGame() {
@@ -25,5 +26,39 @@ public class Main {
 
         System.out.println(vg);
         System.out.println("\nSpiel beendet!");
+    }
+
+    public boolean winner() {
+        VierGewinnt vg = new VierGewinnt();
+        Scanner scanner = new Scanner(System.in);
+
+        while (!vg.isGameOver()) {
+            vg = vg.playMove(vg.bestMove(), true);
+
+            if(vg.isGameOver()) {
+                System.out.println(vg);
+                return true;
+            } else {
+                int m = vg.getAvailableMoves(vg).get(new Random().nextInt(vg.getAvailableMoves(vg).size()));
+                vg = vg.playMove(m, false);
+            }
+
+            if(vg.isGameOver()) {
+                System.out.println(vg);
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public int testGames(int size) {
+        int won = 0;
+        for(int i = 0; i < size; i++) {
+            if(new Main().winner()) {
+                won++;
+            }
+        }
+        double percent = ((double)won / (double)size) * 100;
+        return (int) percent;
     }
 }
