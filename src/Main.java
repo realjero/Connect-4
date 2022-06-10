@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println(new Main().testGames(100) + "% Winrate");
+        System.out.println(new Main().testGames(200) + "% Winrate");
     }
 
     public void startGame() {
