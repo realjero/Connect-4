@@ -165,7 +165,7 @@ public class VierGewinnt implements VierGewinntLogic {
 
         for (Integer m : getAvailableMoves(this)) {
 
-            score = minimax(this.playMove(m, true), 4, false);
+            score = minimax(this.playMove(m, true), 5, false);
 
             if (score > bestScore) {
                 bestScore = score;
@@ -196,7 +196,7 @@ public class VierGewinnt implements VierGewinntLogic {
 
         //Gehe alle Moves in jedem Spiel durch
         for (Integer m : getAvailableMoves(v)) {
-            System.out.println(v.playMove(m, turn));
+            //System.out.println(v.playMove(m, turn));
             count++;
 
             if (turn) {
