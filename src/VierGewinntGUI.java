@@ -2,8 +2,7 @@ import processing.core.PApplet;
 
 public class VierGewinntGUI extends PApplet {
 
-    VierGewinntLogic vg = new VierGewinnt();
-    boolean player;
+    VierGewinntLogic vg;
 
     public static void main(String[] args) {
         PApplet.runSketch(new String[]{"Connect 4"}, new VierGewinntGUI());
@@ -15,8 +14,7 @@ public class VierGewinntGUI extends PApplet {
 
     public void setup() {
         background(color(44, 62, 80));
-
-        player = true;
+        vg = new VierGewinnt(Player.RED);
     }
 
 
@@ -53,7 +51,7 @@ public class VierGewinntGUI extends PApplet {
 
         for (int i = 0; i < VierGewinntLogic.COLUMNS; i++) {
             if (mouseX > i * 100 && mouseX < (i + 1) * 100) {
-                if (player) {
+                if (vg.getPlayer() == Player.RED) {
                     color = color(241, 196, 15);
                 } else {
                     color = color(231, 76, 60);
@@ -69,10 +67,8 @@ public class VierGewinntGUI extends PApplet {
         for (int i = 0; i < VierGewinntLogic.COLUMNS; i++) {
             if (mouseX > i * 100 && mouseX < (i + 1) * 100) {
                 try {
-                    vg = vg.playMove(i, player);
-                    player = !player;
-                    vg = vg.playMove(vg.bestMove(), player);
-                    player = !player;
+                    vg = vg.playMove(i);
+                    vg = vg.playMove(vg.bestMove());
                 } catch (IllegalArgumentException e) {
                     System.out.println(e.getMessage());
                 }

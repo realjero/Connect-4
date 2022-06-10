@@ -13,46 +13,55 @@ public class VierGewinnt implements VierGewinntLogic {
 
     /**
      * The board is represented as array of integers.
-     * The value of player1 = 1, player2 = 2, empty = 0.
+     * The value of red = 1, yellow = 2, empty = 0.
      */
     private int[] board;
+    private Player player;
 
 
     /**
-     * The constructor initializes a empty board.
+     * The constructor initializes object with a empty board and starting player.
+     *
+     * @param startingPlayer the player who starts the game
      */
-    public VierGewinnt() {
-        board = new int[COLUMNS * ROWS];
+    public VierGewinnt(Player startingPlayer) {
+        this.board = new int[COLUMNS * ROWS];
+        this.player = startingPlayer;
     }
 
 
     /**
-     * The constructor initializes a board with the given values.
-     * @param board the board to initialize the game with
+     * The constructor initializes object with the given values.
+     *
+     * @param board          the board to initialize the game with
+     * @param startingPlayer the player who starts the game
      */
-    public VierGewinnt(int[] board) {
+    public VierGewinnt(int[] board, Player startingPlayer) {
         this.board = Arrays.copyOf(board, board.length);
+        this.player = startingPlayer;
     }
 
     /**
      * static Method which generates a new VierGewinnt.
-     * @param board the board to initialize the game with
+     *
+     * @param board          the board to initialize the game with
+     * @param startingPlayer the player who starts the game
      * @return a new VierGewinnt object game with the given values
      */
-    public static VierGewinnt of(int[] board) {
-        return new VierGewinnt(board);
+    public static VierGewinnt of(int[] board, Player startingPlayer) {
+        return new VierGewinnt(board, startingPlayer);
     }
 
 
     /**
      * Method which generates a board with given play.
+     *
      * @param column is the position to drop the coin
-     * @param turn is the player who is playing either 1 or 2
      * @return VierGewinnt object with played move
      */
     @Override
-    public VierGewinnt playMove(int column, boolean turn) {
-        VierGewinnt vg = VierGewinnt.of(board);
+    public VierGewinnt playMove(int column) {
+        VierGewinnt vg = VierGewinnt.of(this.board, this.player);
 
         if (column < 0 || column >= COLUMNS) throw new IllegalArgumentException("Column out of bounds");
         if (vg.getBoard(column, 0) != 0) throw new IllegalArgumentException("Column is full");
@@ -60,17 +69,25 @@ public class VierGewinnt implements VierGewinntLogic {
         if (!isGameOver()) {
             for (int row = ROWS - 1; row >= 0; row--) {
                 if (vg.getBoard(column, row) == 0) {
-                    vg.board[row * COLUMNS + column] = turn ? 1 : 2;
+                    if (vg.player == Player.RED) {
+
+                        vg.board[column + row * COLUMNS] = 1;
+                        vg.player = Player.YELLOW;
+                    } else if (vg.player == Player.YELLOW) {
+
+                        vg.board[column + row * COLUMNS] = 2;
+                        vg.player = Player.RED;
+                    }
                     break;
                 }
             }
         }
-
         return vg;
     }
 
     /**
      * Check if the game is over.
+     *
      * @return TIE or checkForWin()
      */
     @Override
@@ -82,10 +99,10 @@ public class VierGewinnt implements VierGewinntLogic {
     /**
      * Method which checks if there is a winner.
      * Checks: horizontal, vertical or diagonal orders of 4 coins.
-     *
+     * <p>
      * diagonal win \ formula y = x - b
      * diagonal win / formula y = -x - b
-     *
+     * <p>
      * based on every check a String will be generated which is then evaluated.
      *
      * @return if anyone has a winning order
@@ -154,7 +171,8 @@ public class VierGewinnt implements VierGewinntLogic {
 
 
     /**
-     * Check for any higher score and make it the best move
+     * Check for any higher score and make it the best move.
+     *
      * @return column of best move
      */
     @Override
@@ -165,7 +183,7 @@ public class VierGewinnt implements VierGewinntLogic {
 
         for (Integer m : getAvailableMoves(this)) {
 
-            score = minimax(this.playMove(m, false), 1, false);
+            score = minimax(this.playMove(m), 1, false);
 
             if (score > bestScore) {
                 bestScore = score;
@@ -179,8 +197,9 @@ public class VierGewinnt implements VierGewinntLogic {
 
     /**
      * Based on MiniMax algorithm.
-     * @param v is the VierGewinnt object
-     * @param depth maximum depth of the tree
+     *
+     * @param v                is the VierGewinnt object
+     * @param depth            maximum depth of the tree
      * @param maximizingPlayer is the player who is playing either 1 or 2
      * @return the score of the current board
      */
@@ -197,56 +216,34 @@ public class VierGewinnt implements VierGewinntLogic {
         if (maximizingPlayer) {
             score = Integer.MIN_VALUE;
             for (Integer m : getAvailableMoves(v)) {
-                score = Math.max(score, minimax(v.playMove(m, false), depth - 1, false));
+                score = Math.max(score, minimax(v.playMove(m), depth - 1, false));
             }
             return score;
         } else {
             score = Integer.MAX_VALUE;
             for (Integer m : getAvailableMoves(v)) {
-                score = Math.min(score, minimax(v.playMove(m, true), depth - 1, true));
+                score = Math.min(score, minimax(v.playMove(m), depth - 1, true));
             }
             return score;
         }
-
-        //Gehe alle Moves in jedem Spiel durch
-//        for (Integer m : getAvailableMoves(v)) {
-//            //System.out.println(v.playMove(m, turn));
-//            count++;
-//
-//            if (turn) {
-//                bestScore = Integer.MIN_VALUE;
-//                score = minimax(v.playMove(m, true), depth - 1, false);
-//
-//                if (score > bestScore) {
-//                    bestScore = score;
-//                }
-//            } else {
-//                bestScore = Integer.MAX_VALUE;
-//                score = -minimax(v.playMove(m, false), depth - 1, true);
-//
-//                if (score < bestScore) {
-//                    bestScore = score;
-//                }
-//            }
-//        }
-
     }
 
 
     /**
      * Evaluate the current board.
-     * @param v is the VierGewinnt object
-     * @param turn is the player who is playing either 1 or 2
+     *
+     * @param v    is the VierGewinnt object
+     * @param player is the player who is playing either 1 or 2
      * @return the score of the current board
      */
-    public int evaluate(VierGewinnt v, boolean turn) {
+    public int evaluate(VierGewinnt v, boolean player) {
         int score = 0;
         StringBuilder order = new StringBuilder();
 
         for (int r = 0; r < ROWS; r++) {
             order.append(v.getBoard(COLUMNS / 2, r));
         }
-        score += 3 * countPiecesInOrder(order.toString(), 1, turn);
+        score += 3 * countPiecesInOrder(order.toString(), 1, player);
         order.replace(0, order.length(), "");
 
 
@@ -255,9 +252,9 @@ public class VierGewinnt implements VierGewinntLogic {
                 order.append(v.getBoard(c, r));
             }
 
-            score += 100 * countPiecesInOrder(order.toString(), 4, turn);
-            score += 15 * countPiecesInOrder(order.toString(), 3, turn);
-            score += 2 * countPiecesInOrder(order.toString(), 2, turn);
+            score += 100 * countPiecesInOrder(order.toString(), 4, player);
+            score += 15 * countPiecesInOrder(order.toString(), 3, player);
+            score += 2 * countPiecesInOrder(order.toString(), 2, player);
 
             order.replace(0, order.length(), "");
         }
@@ -269,9 +266,9 @@ public class VierGewinnt implements VierGewinntLogic {
                 order.append(v.getBoard(c, r));
             }
 
-            score += 100 * countPiecesInOrder(order.toString(), 4, turn);
-            score += 15 * countPiecesInOrder(order.toString(), 3, turn);
-            score += 2 * countPiecesInOrder(order.toString(), 2, turn);
+            score += 100 * countPiecesInOrder(order.toString(), 4, player);
+            score += 15 * countPiecesInOrder(order.toString(), 3, player);
+            score += 2 * countPiecesInOrder(order.toString(), 2, player);
 
             order.replace(0, order.length(), "");
         }
@@ -286,9 +283,9 @@ public class VierGewinnt implements VierGewinntLogic {
                 }
             }
 
-            score += 100 * countPiecesInOrder(order.toString(), 4, turn);
-            score += 15 * countPiecesInOrder(order.toString(), 3, turn);
-            score += 2 * countPiecesInOrder(order.toString(), 2, turn);
+            score += 100 * countPiecesInOrder(order.toString(), 4, player);
+            score += 15 * countPiecesInOrder(order.toString(), 3, player);
+            score += 2 * countPiecesInOrder(order.toString(), 2, player);
 
             order.replace(0, order.length(), "");
         }
@@ -303,9 +300,9 @@ public class VierGewinnt implements VierGewinntLogic {
                 }
             }
 
-            score += 100 * countPiecesInOrder(order.toString(), 4, turn);
-            score += 15 * countPiecesInOrder(order.toString(), 3, turn);
-            score += 2 * countPiecesInOrder(order.toString(), 2, turn);
+            score += 100 * countPiecesInOrder(order.toString(), 4, player);
+            score += 15 * countPiecesInOrder(order.toString(), 3, player);
+            score += 2 * countPiecesInOrder(order.toString(), 2, player);
 
             order.replace(0, order.length(), "");
         }
@@ -316,6 +313,7 @@ public class VierGewinnt implements VierGewinntLogic {
 
     /**
      * Check the top column for empty spaces and add to list.
+     *
      * @param vg is the VierGewinnt object
      * @return a list of all available moves
      */
@@ -333,8 +331,7 @@ public class VierGewinnt implements VierGewinntLogic {
 
     /**
      * Count matches of amount in order
-     *
-     * @param order horizontal, vertical or diagonal order of pieces
+     * @param order  horizontal, vertical or diagonal order of pieces
      * @param amount amount of pieces in order to be checked
      * @param player is the player who is playing either 1 or 2
      * @return count matches of amount in order
@@ -351,7 +348,7 @@ public class VierGewinnt implements VierGewinntLogic {
 
     /**
      * @param column column to show
-     * @param row row to show
+     * @param row    row to show
      * @return state of board at row * COLUMNS + column
      */
     @Override
@@ -359,6 +356,14 @@ public class VierGewinnt implements VierGewinntLogic {
         if (row < 0 || row >= ROWS) throw new IllegalArgumentException("Row out of bounds");
         if (column < 0 || column >= COLUMNS) throw new IllegalArgumentException("Column out of bounds");
         return board[row * COLUMNS + column];
+    }
+
+    /**
+     * @return current player either RED or YELLOW
+     */
+    @Override
+    public Player getPlayer() {
+        return this.player;
     }
 
     /**

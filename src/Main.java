@@ -8,20 +8,17 @@ public class Main {
     }
 
     public void startGame() {
-        VierGewinnt vg = new VierGewinnt();
+        VierGewinnt vg = new VierGewinnt(Player.RED);
         Scanner scanner = new Scanner(System.in);
-        boolean player = true;
 
         while (!vg.isGameOver()) {
             System.out.println(vg);
             System.out.print("\nSpalte (0-6): ");
-            vg = vg.playMove(scanner.nextInt(), player);
-            player = !player;
+            vg = vg.playMove(scanner.nextInt());
 
 
             System.out.println(vg);
-            vg = vg.playMove(vg.bestMove(), player);
-            player = !player;
+            vg = vg.playMove(vg.bestMove());
         }
 
         System.out.println(vg);
@@ -29,18 +26,18 @@ public class Main {
     }
 
     public boolean winner() {
-        VierGewinnt vg = new VierGewinnt();
+        VierGewinnt vg = new VierGewinnt(Player.RED);
         Scanner scanner = new Scanner(System.in);
 
         while (!vg.isGameOver()) {
-            vg = vg.playMove(vg.bestMove(), true);
+            vg = vg.playMove(vg.bestMove());
 
             if(vg.isGameOver()) {
                 System.out.println(vg);
                 return true;
             } else {
                 int m = vg.getAvailableMoves(vg).get(new Random().nextInt(vg.getAvailableMoves(vg).size()));
-                vg = vg.playMove(m, false);
+                vg = vg.playMove(m);
             }
 
             if(vg.isGameOver()) {
