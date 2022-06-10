@@ -4,44 +4,45 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println(new Main().testGames(200) + "% Winrate");
+        //System.out.println(new Main().testGames(200) + "% Winrate");
+        new Main().startGame();
     }
 
     public void startGame() {
-        VierGewinnt vg = new VierGewinnt(Player.RED);
+        Connect4Logic connect4 = new Connect4Logic(Player.RED);
         Scanner scanner = new Scanner(System.in);
 
-        while (!vg.isGameOver()) {
-            System.out.println(vg);
+        while (!connect4.isGameOver()) {
+            System.out.println(connect4);
             System.out.print("\nSpalte (0-6): ");
-            vg = vg.playMove(scanner.nextInt());
+            connect4 = connect4.playMove(scanner.nextInt());
 
 
-            System.out.println(vg);
-            vg = vg.playMove(vg.bestMove());
+            System.out.println(connect4);
+            connect4 = connect4.playMove(connect4.bestMove());
         }
 
-        System.out.println(vg);
+        System.out.println(connect4);
         System.out.println("\nSpiel beendet!");
     }
 
     public boolean winner() {
-        VierGewinnt vg = new VierGewinnt(Player.RED);
+        Connect4Logic connect4 = new Connect4Logic(Player.RED);
         Scanner scanner = new Scanner(System.in);
 
-        while (!vg.isGameOver()) {
-            vg = vg.playMove(vg.bestMove());
+        while (!connect4.isGameOver()) {
+            connect4 = connect4.playMove(connect4.bestMove());
 
-            if(vg.isGameOver()) {
-                System.out.println(vg);
+            if(connect4.isGameOver()) {
+                System.out.println(connect4);
                 return true;
             } else {
-                int m = vg.getAvailableMoves(vg).get(new Random().nextInt(vg.getAvailableMoves(vg).size()));
-                vg = vg.playMove(m);
+                int m = connect4.getAvailableMoves().get(new Random().nextInt(connect4.getAvailableMoves().size()));
+                connect4 = connect4.playMove(m);
             }
 
-            if(vg.isGameOver()) {
-                System.out.println(vg);
+            if(connect4.isGameOver()) {
+                System.out.println(connect4);
                 return false;
             }
         }

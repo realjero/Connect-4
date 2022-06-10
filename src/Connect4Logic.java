@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author Jerome Habanz
  */
-public class VierGewinnt implements VierGewinntLogic {
+public class Connect4Logic implements Connect4 {
 
 
     /**
@@ -24,7 +24,7 @@ public class VierGewinnt implements VierGewinntLogic {
      *
      * @param startingPlayer the player who starts the game
      */
-    public VierGewinnt(Player startingPlayer) {
+    public Connect4Logic(Player startingPlayer) {
         this.board = new int[COLUMNS * ROWS];
         this.player = startingPlayer;
     }
@@ -36,20 +36,24 @@ public class VierGewinnt implements VierGewinntLogic {
      * @param board          the board to initialize the game with
      * @param startingPlayer the player who starts the game
      */
-    public VierGewinnt(int[] board, Player startingPlayer) {
+    public Connect4Logic(int[] board, Player startingPlayer) {
         this.board = Arrays.copyOf(board, board.length);
-        this.player = startingPlayer;
+        if(startingPlayer == Player.RED) {
+            this.player = Player.RED;
+        } else {
+            this.player = Player.YELLOW;
+        }
     }
 
     /**
-     * static Method which generates a new VierGewinnt.
+     * static Method which generates a new Connect4Logic.
      *
      * @param board          the board to initialize the game with
      * @param startingPlayer the player who starts the game
-     * @return a new VierGewinnt object game with the given values
+     * @return a new Connect4Logic object game with the given values
      */
-    public static VierGewinnt of(int[] board, Player startingPlayer) {
-        return new VierGewinnt(board, startingPlayer);
+    public static Connect4Logic of(int[] board, Player startingPlayer) {
+        return new Connect4Logic(board, startingPlayer);
     }
 
 
@@ -57,32 +61,32 @@ public class VierGewinnt implements VierGewinntLogic {
      * Method which generates a board with given play.
      *
      * @param column is the position to drop the coin
-     * @return VierGewinnt object with played move
+     * @return Connect4Logic object with played move
      */
     @Override
-    public VierGewinnt playMove(int column) {
-        VierGewinnt vg = VierGewinnt.of(this.board, this.player);
+    public Connect4Logic playMove(int column) {
+        Connect4Logic connect4 = Connect4Logic.of(this.board, this.player);
 
         if (column < 0 || column >= COLUMNS) throw new IllegalArgumentException("Column out of bounds");
-        if (vg.getBoard(column, 0) != 0) throw new IllegalArgumentException("Column is full");
+        if (connect4.getBoard(column, 0) != 0) throw new IllegalArgumentException("Column is full");
 
         if (!isGameOver()) {
             for (int row = ROWS - 1; row >= 0; row--) {
-                if (vg.getBoard(column, row) == 0) {
-                    if (vg.player == Player.RED) {
+                if (connect4.getBoard(column, row) == 0) {
+                    if (connect4.player == Player.RED) {
 
-                        vg.board[column + row * COLUMNS] = 1;
-                        vg.player = Player.YELLOW;
-                    } else if (vg.player == Player.YELLOW) {
+                        connect4.board[column + row * COLUMNS] = 1;
+                        connect4.player = Player.YELLOW;
+                    } else if (connect4.player == Player.YELLOW) {
 
-                        vg.board[column + row * COLUMNS] = 2;
-                        vg.player = Player.RED;
+                        connect4.board[column + row * COLUMNS] = 2;
+                        connect4.player = Player.RED;
                     }
                     break;
                 }
             }
         }
-        return vg;
+        return connect4;
     }
 
     /**
@@ -181,9 +185,9 @@ public class VierGewinnt implements VierGewinntLogic {
         int bestScore = Integer.MIN_VALUE;
         int score;
 
-        for (Integer m : getAvailableMoves(this)) {
+        for (Integer m : getAvailableMoves()) {
 
-            score = minimax(this.playMove(m), 1, false);
+            score = minimax(this.playMove(m), 3, player == Player.YELLOW);
 
             if (score > bestScore) {
                 bestScore = score;
@@ -198,12 +202,12 @@ public class VierGewinnt implements VierGewinntLogic {
     /**
      * Based on MiniMax algorithm.
      *
-     * @param v                is the VierGewinnt object
+     * @param v                is the Connect4Logic object
      * @param depth            maximum depth of the tree
      * @param maximizingPlayer is the player who is playing either 1 or 2
      * @return the score of the current board
      */
-    public int minimax(VierGewinnt v, int depth, boolean maximizingPlayer) {
+    public int minimax(Connect4Logic v, int depth, boolean maximizingPlayer) {
         int score;
 
         //Abbruchbedingung
@@ -215,13 +219,13 @@ public class VierGewinnt implements VierGewinntLogic {
         System.out.println("Count: " + count);
         if (maximizingPlayer) {
             score = Integer.MIN_VALUE;
-            for (Integer m : getAvailableMoves(v)) {
+            for (Integer m : v.getAvailableMoves()) {
                 score = Math.max(score, minimax(v.playMove(m), depth - 1, false));
             }
             return score;
         } else {
             score = Integer.MAX_VALUE;
-            for (Integer m : getAvailableMoves(v)) {
+            for (Integer m : v.getAvailableMoves()) {
                 score = Math.min(score, minimax(v.playMove(m), depth - 1, true));
             }
             return score;
@@ -232,11 +236,11 @@ public class VierGewinnt implements VierGewinntLogic {
     /**
      * Evaluate the current board.
      *
-     * @param v    is the VierGewinnt object
+     * @param v    is the Connect4Logic object
      * @param player is the player who is playing either 1 or 2
      * @return the score of the current board
      */
-    public int evaluate(VierGewinnt v, boolean player) {
+    public int evaluate(Connect4Logic v, boolean player) {
         int score = 0;
         StringBuilder order = new StringBuilder();
 
@@ -313,14 +317,12 @@ public class VierGewinnt implements VierGewinntLogic {
 
     /**
      * Check the top column for empty spaces and add to list.
-     *
-     * @param vg is the VierGewinnt object
      * @return a list of all available moves
      */
-    public List<Integer> getAvailableMoves(VierGewinnt vg) {
+    public List<Integer> getAvailableMoves() {
         List<Integer> moveList = new ArrayList<>();
         for (int column = 0; column < COLUMNS; column++) {
-            if (vg.getBoard(column, 0) == 0) {
+            if (getBoard(column, 0) == 0) {
                 moveList.add(column);
             }
         }
