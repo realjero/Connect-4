@@ -160,12 +160,12 @@ public class VierGewinnt implements VierGewinntLogic {
     @Override
     public int bestMove() {
         int column = 0;
-        int bestScore = -100;
-        int score = 0;
+        int bestScore = Integer.MIN_VALUE;
+        int score;
 
         for (Integer m : getAvailableMoves(this)) {
 
-            score = minimax(this.playMove(m, true), 5, false);
+            score = minimax(this.playMove(m, false), 1, false);
 
             if (score > bestScore) {
                 bestScore = score;
@@ -181,44 +181,55 @@ public class VierGewinnt implements VierGewinntLogic {
      * Based on MiniMax algorithm.
      * @param v is the VierGewinnt object
      * @param depth maximum depth of the tree
-     * @param turn is the player who is playing either 1 or 2
+     * @param maximizingPlayer is the player who is playing either 1 or 2
      * @return the score of the current board
      */
-    public int minimax(VierGewinnt v, int depth, boolean turn) {
-        int score = 0;
-        int bestScore = 0;
+    public int minimax(VierGewinnt v, int depth, boolean maximizingPlayer) {
+        int score;
 
         //Abbruchbedingung
         if (depth == 0 || v.isGameOver()) {
-            return evaluate(v, !turn);
+            return evaluate(v, !maximizingPlayer);
         }
 
+        count++;
+        System.out.println("Count: " + count);
+        if (maximizingPlayer) {
+            score = Integer.MIN_VALUE;
+            for (Integer m : getAvailableMoves(v)) {
+                score = Math.max(score, minimax(v.playMove(m, false), depth - 1, false));
+            }
+            return score;
+        } else {
+            score = Integer.MAX_VALUE;
+            for (Integer m : getAvailableMoves(v)) {
+                score = Math.min(score, minimax(v.playMove(m, true), depth - 1, true));
+            }
+            return score;
+        }
 
         //Gehe alle Moves in jedem Spiel durch
-        for (Integer m : getAvailableMoves(v)) {
-            //System.out.println(v.playMove(m, turn));
-            count++;
+//        for (Integer m : getAvailableMoves(v)) {
+//            //System.out.println(v.playMove(m, turn));
+//            count++;
+//
+//            if (turn) {
+//                bestScore = Integer.MIN_VALUE;
+//                score = minimax(v.playMove(m, true), depth - 1, false);
+//
+//                if (score > bestScore) {
+//                    bestScore = score;
+//                }
+//            } else {
+//                bestScore = Integer.MAX_VALUE;
+//                score = -minimax(v.playMove(m, false), depth - 1, true);
+//
+//                if (score < bestScore) {
+//                    bestScore = score;
+//                }
+//            }
+//        }
 
-            if (turn) {
-                bestScore = Integer.MIN_VALUE;
-                score = minimax(v.playMove(m, true), depth - 1, false);
-
-                if (score > bestScore) {
-                    bestScore = score;
-                }
-            } else {
-                bestScore = Integer.MAX_VALUE;
-                score = -minimax(v.playMove(m, false), depth - 1, true);
-
-                if (score < bestScore) {
-                    bestScore = score;
-                }
-            }
-        }
-
-        System.out.println("Count: " + count);
-
-        return bestScore;
     }
 
 
