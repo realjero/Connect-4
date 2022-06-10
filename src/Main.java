@@ -16,6 +16,11 @@ public class Main {
             System.out.print("\nSpalte (0-6): ");
             vg = vg.playMove(scanner.nextInt(), player);
             player = !player;
+
+
+            System.out.println(vg);
+            vg = vg.playMove(vg.bestMove(), player);
+            player = !player;
         }
 
         System.out.println(vg);

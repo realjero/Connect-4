@@ -114,15 +114,31 @@ public class VierGewinnt implements VierGewinntLogic {
     //Start of Algorithm
     @Override
     public int bestMove() {
-        return 0;
+        int column = 0;
+        int bestScore = -100;
+        int score = 0;
+
+        for (Integer m : getAvailableMoves(this)) {
+
+            score = minimax(this.playMove(m, true), 4, false);
+
+            if (score > bestScore) {
+                bestScore = score;
+                column = m;
+            }
+        }
+        return column;
     }
 
     int count = 0;
+
     public int minimax(VierGewinnt v, int depth, boolean turn) {
+        int score = 0;
+        int bestScore = 0;
 
         //Abbruchbedingung
         if (depth == 0 || v.isGameOver()) {
-            return 1;
+            return evaluate(v, !turn);
         }
 
 
@@ -130,29 +146,101 @@ public class VierGewinnt implements VierGewinntLogic {
         for (Integer m : getAvailableMoves(v)) {
             System.out.println(v.playMove(m, turn));
             count++;
-            minimax(v.playMove(m, turn), depth - 1, !turn);
+
+            if(turn) {
+                bestScore = Integer.MIN_VALUE;
+                score = minimax(v.playMove(m, true), depth - 1, false);
+
+                if(score > bestScore) {
+                    bestScore = score;
+                }
+            } else {
+                bestScore = Integer.MAX_VALUE;
+                score = -minimax(v.playMove(m, false), depth - 1, true);
+
+                if(score < bestScore) {
+                    bestScore = score;
+                }
+            }
         }
 
         System.out.println("Count: " + count);
 
-        return 0;
+        return bestScore;
     }
 
     public int evaluate(VierGewinnt v, boolean turn) {
         int score = 0;
-        VierGewinnt vg = v;
-
         StringBuilder order = new StringBuilder();
 
-        //check for horizontal win
+        for(int r = 0; r < ROWS; r++) {
+            order.append(v.getBoard(COLUMNS / 2, r));
+        }
+        score += 3 * countPiecesInOrder(order.toString(), 1, turn);
+        order.replace(0, order.length(), "");
+
+
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLUMNS; c++) {
-                order.append(getBoard(c, r));
+                order.append(v.getBoard(c, r));
             }
+
+            score += 100 * countPiecesInOrder(order.toString(), 4, turn);
+            score += 15 * countPiecesInOrder(order.toString(), 3, turn);
+            score += 2 * countPiecesInOrder(order.toString(), 2, turn);
+
             order.replace(0, order.length(), "");
         }
 
-        return 0;
+
+        //check for vertical win
+        for (int c = 0; c < COLUMNS; c++) {
+            for (int r = 0; r < ROWS; r++) {
+                order.append(v.getBoard(c, r));
+            }
+
+            score += 100 * countPiecesInOrder(order.toString(), 4, turn);
+            score += 15 * countPiecesInOrder(order.toString(), 3, turn);
+            score += 2 * countPiecesInOrder(order.toString(), 2, turn);
+
+            order.replace(0, order.length(), "");
+        }
+
+        //check for diagonal win \
+        //based on formula: y = x - b
+        for (int b = -ROWS + 1; b < COLUMNS; b++) {
+            for (int x = 0; x < COLUMNS; x++) {
+                int y = x - b;
+                if (y >= 0 && y < ROWS) {
+                    order.append(v.getBoard(x, y));
+                }
+            }
+
+            score += 100 * countPiecesInOrder(order.toString(), 4, turn);
+            score += 15 * countPiecesInOrder(order.toString(), 3, turn);
+            score += 2 * countPiecesInOrder(order.toString(), 2, turn);
+
+            order.replace(0, order.length(), "");
+        }
+
+        //check for diagonal win /
+        //based on formula: y = -x - b
+        for (int b = 0; b >= -(COLUMNS - 1) - (ROWS - 1); b--) {
+            for (int x = 0; x < COLUMNS; x++) {
+                int y = -x - b;
+                if (y >= 0 && y < ROWS) {
+                    order.append(v.getBoard(x, y));
+                }
+            }
+
+            score += 100 * countPiecesInOrder(order.toString(), 4, turn);
+            score += 15 * countPiecesInOrder(order.toString(), 3, turn);
+            score += 2 * countPiecesInOrder(order.toString(), 2, turn);
+
+            order.replace(0, order.length(), "");
+        }
+
+        return score;
     }
 
     public List<Integer> getAvailableMoves(VierGewinnt vg) {
@@ -172,6 +260,9 @@ public class VierGewinnt implements VierGewinntLogic {
     //001111222
     public static int countPiecesInOrder(String order, int amount, boolean player) {
         String scan = player ? "1".repeat(amount) : "2".repeat(amount);
+        if(order.length() <= amount) {
+            return 0;
+        }
         return StringUtils.countMatches(order, scan);
     }
     //End of Algorithm
