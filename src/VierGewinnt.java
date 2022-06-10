@@ -20,6 +20,7 @@ public class VierGewinnt implements VierGewinntLogic {
         return new VierGewinnt(board);
     }
 
+
     //Start of Logic
     @Override
     public VierGewinnt playMove(int column, boolean turn) {
@@ -43,14 +44,6 @@ public class VierGewinnt implements VierGewinntLogic {
     @Override
     public boolean isGameOver() {
         return Arrays.stream(board).allMatch(i -> i != 0) || checkForWin();
-    }
-
-    //  scan = 4
-    //  |--|
-    //001111222
-    public static int countPiecesInOrder(String order, int amount, boolean player) {
-        String scan = player ? "1".repeat(amount) : "2".repeat(amount);
-        return StringUtils.countMatches(order, scan);
     }
 
     private boolean checkForWin() {
@@ -124,9 +117,7 @@ public class VierGewinnt implements VierGewinntLogic {
         return 0;
     }
 
-
     int count = 0;
-
     public int minimax(VierGewinnt v, int depth, boolean turn) {
 
         //Abbruchbedingung
@@ -147,6 +138,23 @@ public class VierGewinnt implements VierGewinntLogic {
         return 0;
     }
 
+    public int evaluate(VierGewinnt v, boolean turn) {
+        int score = 0;
+        VierGewinnt vg = v;
+
+        StringBuilder order = new StringBuilder();
+
+        //check for horizontal win
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLUMNS; c++) {
+                order.append(getBoard(c, r));
+            }
+            order.replace(0, order.length(), "");
+        }
+
+        return 0;
+    }
+
     public List<Integer> getAvailableMoves(VierGewinnt vg) {
         List<Integer> moveList = new ArrayList<>();
         for (int column = 0; column < COLUMNS; column++) {
@@ -156,6 +164,15 @@ public class VierGewinnt implements VierGewinntLogic {
         }
 
         return moveList;
+    }
+
+
+    //  scan = 4
+    //  |--|
+    //001111222
+    public static int countPiecesInOrder(String order, int amount, boolean player) {
+        String scan = player ? "1".repeat(amount) : "2".repeat(amount);
+        return StringUtils.countMatches(order, scan);
     }
     //End of Algorithm
 
