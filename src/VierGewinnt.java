@@ -351,16 +351,7 @@ public class VierGewinnt implements VierGewinntLogic {
     }
 
     /**
-     *
      * Represents the board as a string.
-     *
-     *  -  -  -  -  -  O  O
-     *  -  -  -  -  -  X  X
-     *  -  -  -  -  X  O  O
-     *  -  -  -  -  O  X  X
-     *  -  -  X  O  X  O  X
-     *  O  O  X  X  X  O  X
-     *
      * @return representation of board as String
      */
     public String toString() {
