@@ -103,10 +103,11 @@ class UnitTests {
     }
 
     @Test
-    void testCountPieces() {
-        assertEquals(2, Connect4Logic.countPiecesInOrder("1211211", 2, true));
-        assertEquals(1, Connect4Logic.countPiecesInOrder("11", 2, true));
-        assertEquals(1, Connect4Logic.countPiecesInOrder("22", 2, false));
-        assertEquals(1, Connect4Logic.countPiecesInOrder("12121212222", 4, false));
+    void testCheck4InOrder() {
+        Connect4Logic c4 = new Connect4Logic(Player.RED);
+        assertEquals(1, c4.check4InOrder("121121121111"));
+        assertEquals(2, c4.check4InOrder("112121212222"));
+        assertEquals(0, c4.check4InOrder("2221212121212"));
+        assertEquals(0, c4.check4InOrder("1212121222121"));
     }
 }
