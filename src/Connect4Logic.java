@@ -1,5 +1,3 @@
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +36,7 @@ public class Connect4Logic implements Connect4 {
      */
     public Connect4Logic(int[] board, Player startingPlayer) {
         this.board = Arrays.copyOf(board, board.length);
-        if(startingPlayer == Player.RED) {
+        if (startingPlayer == Player.RED) {
             this.player = Player.RED;
         } else {
             this.player = Player.YELLOW;
@@ -120,9 +118,8 @@ public class Connect4Logic implements Connect4 {
                 order.append(getBoard(c, r));
             }
 
-            if (countPiecesInOrder(order.toString(), 4, true) == 1 ||
-                    countPiecesInOrder(order.toString(), 4, false) == 1)
-                return true;
+            if (check4InOrder(order.toString()) != 0) return true;
+
             order.replace(0, order.length(), "");
         }
 
@@ -132,9 +129,8 @@ public class Connect4Logic implements Connect4 {
                 order.append(getBoard(c, r));
             }
 
-            if (countPiecesInOrder(order.toString(), 4, true) == 1 ||
-                    countPiecesInOrder(order.toString(), 4, false) == 1)
-                return true;
+            if (check4InOrder(order.toString()) != 0) return true;
+
             order.replace(0, order.length(), "");
         }
 
@@ -147,9 +143,7 @@ public class Connect4Logic implements Connect4 {
                 }
             }
 
-            if (countPiecesInOrder(order.toString(), 4, true) == 1 ||
-                    countPiecesInOrder(order.toString(), 4, false) == 1)
-                return true;
+            if (check4InOrder(order.toString()) != 0) return true;
 
             order.replace(0, order.length(), "");
         }
@@ -163,9 +157,7 @@ public class Connect4Logic implements Connect4 {
                 }
             }
 
-            if (countPiecesInOrder(order.toString(), 4, true) == 1 ||
-                    countPiecesInOrder(order.toString(), 4, false) == 1)
-                return true;
+            if (check4InOrder(order.toString()) != 0) return true;
 
             order.replace(0, order.length(), "");
         }
@@ -236,87 +228,18 @@ public class Connect4Logic implements Connect4 {
     /**
      * Evaluate the current board.
      *
-     * @param v    is the Connect4Logic object
+     * @param v      is the Connect4Logic object
      * @param player is the player who is playing either 1 or 2
      * @return the score of the current board
      */
     public int evaluate(Connect4Logic v, boolean player) {
-        int score = 0;
-        StringBuilder order = new StringBuilder();
-
-        for (int r = 0; r < ROWS; r++) {
-            order.append(v.getBoard(COLUMNS / 2, r));
-        }
-        score += 3 * countPiecesInOrder(order.toString(), 1, player);
-        order.replace(0, order.length(), "");
-
-
-        for (int r = 0; r < ROWS; r++) {
-            for (int c = 0; c < COLUMNS; c++) {
-                order.append(v.getBoard(c, r));
-            }
-
-            score += 100 * countPiecesInOrder(order.toString(), 4, player);
-            score += 15 * countPiecesInOrder(order.toString(), 3, player);
-            score += 2 * countPiecesInOrder(order.toString(), 2, player);
-
-            order.replace(0, order.length(), "");
-        }
-
-
-        //check for vertical win
-        for (int c = 0; c < COLUMNS; c++) {
-            for (int r = 0; r < ROWS; r++) {
-                order.append(v.getBoard(c, r));
-            }
-
-            score += 100 * countPiecesInOrder(order.toString(), 4, player);
-            score += 15 * countPiecesInOrder(order.toString(), 3, player);
-            score += 2 * countPiecesInOrder(order.toString(), 2, player);
-
-            order.replace(0, order.length(), "");
-        }
-
-        //check for diagonal win \
-        //based on formula: y = x - b
-        for (int b = -ROWS + 1; b < COLUMNS; b++) {
-            for (int x = 0; x < COLUMNS; x++) {
-                int y = x - b;
-                if (y >= 0 && y < ROWS) {
-                    order.append(v.getBoard(x, y));
-                }
-            }
-
-            score += 100 * countPiecesInOrder(order.toString(), 4, player);
-            score += 15 * countPiecesInOrder(order.toString(), 3, player);
-            score += 2 * countPiecesInOrder(order.toString(), 2, player);
-
-            order.replace(0, order.length(), "");
-        }
-
-        //check for diagonal win /
-        //based on formula: y = -x - b
-        for (int b = 0; b >= -(COLUMNS - 1) - (ROWS - 1); b--) {
-            for (int x = 0; x < COLUMNS; x++) {
-                int y = -x - b;
-                if (y >= 0 && y < ROWS) {
-                    order.append(v.getBoard(x, y));
-                }
-            }
-
-            score += 100 * countPiecesInOrder(order.toString(), 4, player);
-            score += 15 * countPiecesInOrder(order.toString(), 3, player);
-            score += 2 * countPiecesInOrder(order.toString(), 2, player);
-
-            order.replace(0, order.length(), "");
-        }
-
-        return score;
+        return 0;
     }
 
 
     /**
      * Check the top column for empty spaces and add to list.
+     *
      * @return a list of all available moves
      */
     public List<Integer> getAvailableMoves() {
@@ -332,20 +255,35 @@ public class Connect4Logic implements Connect4 {
 
 
     /**
-     * Count matches of amount in order
-     * @param order  horizontal, vertical or diagonal order of pieces
-     * @param amount amount of pieces in order to be checked
-     * @param player is the player who is playing either 1 or 2
-     * @return count matches of amount in order
+     * Count 4 in order
+     *
+     * @param order horizontal, vertical or diagonal order of pieces
+     * @return player who won or 0
      */
-    public static int countPiecesInOrder(String order, int amount, boolean player) {
-        String scan = player ? "1".repeat(amount) : "2".repeat(amount);
-        if (order.length() <= amount) {
-            return 0;
+    public int check4InOrder(String order) {
+        int count = 0;
+        char last = '0';
+        for (int i = 0; i < order.length(); i++) {
+            char at = order.charAt(i);
+
+            //Falls aktuelles Feld leer || letztes Feld ungleich dem jetzigen Feld ||
+            //Zurücksetzen des Counters & last
+            if (at == 0 || last != at) {
+                count = 0;
+                last = '0';
+            }
+
+            //Zählen der einzelnen Felder
+            if (at != 0) {
+                count++;
+                last = at;
+            }
+
+            //Wenn 4 Felder in in einer Folge gefunden wurden
+            if (count == 4) return Character.getNumericValue(last);
         }
-        return StringUtils.countMatches(order, scan);
+        return 0;
     }
-    //End of Algorithm
 
 
     /**
@@ -370,6 +308,7 @@ public class Connect4Logic implements Connect4 {
 
     /**
      * Represents the board as a string.
+     *
      * @return representation of board as String
      */
     public String toString() {
