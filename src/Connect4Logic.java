@@ -111,28 +111,56 @@ public class Connect4Logic implements Connect4 {
      * @return if anyone has a winning order
      */
     private boolean checkForWin() {
-        StringBuilder order = new StringBuilder();
+        int last = 0, count = 0;
 
         //check for horizontal win
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLUMNS; c++) {
-                order.append(getBoard(c, r));
+                //Falls aktuelles Feld leer || letztes Feld ungleich dem jetzigen Feld ||
+                //Zurücksetzen des Counters & last
+                if (getBoard(c, r) == 0 || last != getBoard(c, r)) {
+                    count = 0;
+                    last = 0;
+                }
+
+                //Zählen der einzelnen Felder
+                if (getBoard(c, r) != 0) {
+                    count++;
+                    last = getBoard(c, r);
+                }
+
+                //Wenn 4 Felder in in einer Folge gefunden wurden
+                if (count == 4) return true;
             }
 
-            if (check4InOrder(order.toString()) != 0) return true;
-
-            order.replace(0, order.length(), "");
+            // Break
+            count = 0;
+            last = 0;
         }
 
         //check for vertical win
         for (int c = 0; c < COLUMNS; c++) {
             for (int r = 0; r < ROWS; r++) {
-                order.append(getBoard(c, r));
+                //Falls aktuelles Feld leer || letztes Feld ungleich dem jetzigen Feld ||
+                //Zurücksetzen des Counters & last
+                if (getBoard(c, r) == 0 || last != getBoard(c, r)) {
+                    count = 0;
+                    last = 0;
+                }
+
+                //Zählen der einzelnen Felder
+                if (getBoard(c, r) != 0) {
+                    count++;
+                    last = getBoard(c, r);
+                }
+
+                //Wenn 4 Felder in in einer Folge gefunden wurden
+                if (count == 4) return true;
             }
 
-            if (check4InOrder(order.toString()) != 0) return true;
-
-            order.replace(0, order.length(), "");
+            // Break
+            count = 0;
+            last = 0;
         }
 
         //check for diagonal win \
@@ -140,29 +168,53 @@ public class Connect4Logic implements Connect4 {
             for (int x = 0; x < COLUMNS; x++) {
                 int y = x - b;
                 if (y >= 0 && y < ROWS) {
-                    order.append(getBoard(x, y));
+                    if (getBoard(x, y) == 0 || last != getBoard(x, y)) {
+                        count = 0;
+                        last = 0;
+                    }
+
+                    //Zählen der einzelnen Felder
+                    if (getBoard(x, y) != 0) {
+                        count++;
+                        last = getBoard(x, y);
+                    }
+
+                    //Wenn 4 Felder in in einer Folge gefunden wurden
+                    if (count == 4) return true;
                 }
             }
 
-            if (check4InOrder(order.toString()) != 0) return true;
-
-            order.replace(0, order.length(), "");
+            // Break
+            count = 0;
+            last = 0;
         }
 
         //check for diagonal win /
         for (int b = 0; b >= -(COLUMNS - 1) - (ROWS - 1); b--) {
             for (int x = 0; x < COLUMNS; x++) {
                 int y = -x - b;
+
                 if (y >= 0 && y < ROWS) {
-                    order.append(getBoard(x, y));
+                    if (getBoard(x, y) == 0 || last != getBoard(x, y)) {
+                        count = 0;
+                        last = 0;
+                    }
+
+                    //Zählen der einzelnen Felder
+                    if (getBoard(x, y) != 0) {
+                        count++;
+                        last = getBoard(x, y);
+                    }
+
+                    //Wenn 4 Felder in in einer Folge gefunden wurden
+                    if (count == 4) return true;
                 }
             }
 
-            if (check4InOrder(order.toString()) != 0) return true;
-
-            order.replace(0, order.length(), "");
+            // Break
+            count = 0;
+            last = 0;
         }
-
         return false;
     }
 
@@ -235,15 +287,15 @@ public class Connect4Logic implements Connect4 {
      */
     public int evaluate(Connect4Logic c, boolean player) {
         int[] count = new int[3];
-        int size = 100;
+        int size = 50;
         for(int i = 0; i < size; i++) {
             count[random_game(c)]++;
         }
 
-        System.out.println(count[0]);
-        System.out.println(count[1]);
-        System.out.println(count[2]);
-        System.out.println();
+        //System.out.println(count[0]);
+        //System.out.println(count[1]);
+        //System.out.println(count[2]);
+        //System.out.println();
         if(player) {
             return (int) ((float)count[1] / (float) size * 100);
         } else {
@@ -252,9 +304,16 @@ public class Connect4Logic implements Connect4 {
     }
 
     public int random_game(Connect4Logic c) {
+
+        long startTime = System.nanoTime();
         while(!c.isGameOver()) {
             c = c.playMove(c.getAvailableMoves().get(new Random().nextInt(c.getAvailableMoves().size())));
         }
+
+        long endTime = System.nanoTime();
+        System.out.println("Time" + (float)(endTime - startTime)/1000000);
+
+
         if(c.checkForWin()) {
             return c.getPlayer() == Player.RED ? 1 : 2;
         }
@@ -274,42 +333,8 @@ public class Connect4Logic implements Connect4 {
                 moveList.add(column);
             }
         }
-
         return moveList;
     }
-
-
-    /**
-     * Check for 4 in order
-     *
-     * @param order horizontal, vertical or diagonal order of pieces
-     * @return player who won or 0
-     */
-    public int check4InOrder(String order) {
-        int count = 0;
-        char last = '0';
-        for (int i = 0; i < order.length(); i++) {
-            char at = order.charAt(i);
-
-            //Falls aktuelles Feld leer || letztes Feld ungleich dem jetzigen Feld ||
-            //Zurücksetzen des Counters & last
-            if (at == 0 || last != at) {
-                count = 0;
-                last = '0';
-            }
-
-            //Zählen der einzelnen Felder
-            if (at != 0) {
-                count++;
-                last = at;
-            }
-
-            //Wenn 4 Felder in in einer Folge gefunden wurden
-            if (count == 4) return Character.getNumericValue(last);
-        }
-        return 0;
-    }
-
 
     /**
      * @param column column to show
