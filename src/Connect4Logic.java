@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -228,11 +229,35 @@ public class Connect4Logic implements Connect4 {
     /**
      * Evaluate the current board.
      *
-     * @param v      is the Connect4Logic object
+     * @param c      is the Connect4Logic object
      * @param player is the player who is playing either 1 or 2
      * @return the score of the current board
      */
-    public int evaluate(Connect4Logic v, boolean player) {
+    public int evaluate(Connect4Logic c, boolean player) {
+        int[] count = new int[3];
+        int size = 100;
+        for(int i = 0; i < size; i++) {
+            count[random_game(c)]++;
+        }
+
+        System.out.println(count[0]);
+        System.out.println(count[1]);
+        System.out.println(count[2]);
+        System.out.println();
+        if(player) {
+            return (int) ((float)count[1] / (float) size * 100);
+        } else {
+            return (int) ((float)count[2] / (float) size * 100);
+        }
+    }
+
+    public int random_game(Connect4Logic c) {
+        while(!c.isGameOver()) {
+            c = c.playMove(c.getAvailableMoves().get(new Random().nextInt(c.getAvailableMoves().size())));
+        }
+        if(c.checkForWin()) {
+            return c.getPlayer() == Player.RED ? 1 : 2;
+        }
         return 0;
     }
 
@@ -255,7 +280,7 @@ public class Connect4Logic implements Connect4 {
 
 
     /**
-     * Count 4 in order
+     * Check for 4 in order
      *
      * @param order horizontal, vertical or diagonal order of pieces
      * @return player who won or 0
