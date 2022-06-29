@@ -2,7 +2,7 @@ public interface Connect4 {
     int COLUMNS = 7;
     int ROWS = 6;
 
-    Connect4Logic playMove(int column);
+    void play(int column);
 
     int bestMove();
 
@@ -10,5 +10,5 @@ public interface Connect4 {
 
     int getBoard(int row, int column);
 
-    Player getPlayer();
+    boolean getPlayer();
 }

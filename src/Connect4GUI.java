@@ -14,7 +14,7 @@ public class Connect4GUI extends PApplet {
 
     public void setup() {
         background(color(44, 62, 80));
-        connect4 = new Connect4Logic(Player.RED);
+        connect4 = new Connect4Logic();
     }
 
 
@@ -47,30 +47,32 @@ public class Connect4GUI extends PApplet {
             fill(color(236, 240, 241));
             textSize(50);
             text("Game Over", width / 2 - 117, height - 25);
-        }
-
-        for (int i = 0; i < Connect4.COLUMNS; i++) {
-            if (mouseX > i * 100 && mouseX < (i + 1) * 100) {
-                if (connect4.getPlayer() == Player.RED) {
-                    color = color(231, 76, 60);
-                } else {
-                    color = color(241, 196, 15);
+        } else {
+            for (int i = 0; i < Connect4.COLUMNS; i++) {
+                if (mouseX > i * 100 && mouseX < (i + 1) * 100) {
+                    if (connect4.getPlayer()) {
+                        color = color(231, 76, 60);
+                    } else {
+                        color = color(241, 196, 15);
+                    }
+                    fill(color);
+                    ellipse(i * 100 + 50, 0, 90, 90);
                 }
-                fill(color);
-                ellipse(i * 100 + 50, 0, 90, 90);
             }
         }
     }
 
     @Override
     public void mouseClicked() {
-        for (int i = 0; i < Connect4.COLUMNS; i++) {
-            if (mouseX > i * 100 && mouseX < (i + 1) * 100) {
-                try {
-                    connect4 = connect4.playMove(i);
-                    connect4 = connect4.playMove(connect4.bestMove());
-                } catch (IllegalArgumentException e) {
-                    System.out.println(e.getMessage());
+        if(!connect4.isGameOver()) {
+            for (int i = 0; i < Connect4.COLUMNS; i++) {
+                if (mouseX > i * 100 && mouseX < (i + 1) * 100) {
+                    try {
+                        connect4.play(i);
+                        connect4.play(connect4.bestMove());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
         }
