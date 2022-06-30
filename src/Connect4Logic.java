@@ -60,18 +60,20 @@ public class Connect4Logic implements Connect4 {
      * @param column column to drop piece
      */
     @Override
-    public void play(int column) {
+    public Connect4Logic play(int column) {
+
+        long move = getMove(column);
+
         if (column < 0 || column >= COLUMNS) throw new IllegalArgumentException("Invalid column");
-        assert !isGameOver();
-        moves[counter] = getMove(column);
+        if (isGameOver()) throw new RuntimeException("Game Over");
+        if (move == 0L) throw new IllegalArgumentException("Full column");
 
-        if (moves[counter] == 0) {
-            moves[counter] = 0;
-            throw new IllegalArgumentException("Full column");
-        }
+        Connect4Logic c = Connect4Logic.valueOf(this.bitboard, this.moves, this.counter);
 
-        bitboard[counter & 1] ^= moves[counter];
-        counter++;
+        c.moves[c.counter] = move;
+        c.bitboard[c.counter & 1] ^= c.moves[c.counter];
+        c.counter++;
+        return c;
     }
 
     /**
@@ -84,11 +86,9 @@ public class Connect4Logic implements Connect4 {
 
     @Override
     public int getBoard(int column, int row) {
-
-        long pos = column * (ROWS + 1) + ROWS - 1 - row;
-
-        if(((bitboard[0] >> pos) & 1) == 1) return 2;
-        if(((bitboard[1] >> pos) & 1) == 1) return 1;
+        long pos = (long) column * (ROWS + 1) + ROWS - 1 - row;
+        if (((bitboard[0] >> pos) & 1) == 1) return 2;
+        if (((bitboard[1] >> pos) & 1) == 1) return 1;
         return 0;
     }
 
@@ -102,7 +102,7 @@ public class Connect4Logic implements Connect4 {
      * @param column column to drop piece
      * @return lowest binary position in column that is empty
      */
-    private long getMove(int column) {
+    public long getMove(int column) {
         long move = 1L << (column * 7);
         for (int pos = 0; pos < ROWS; pos++) {
             if (((bitboard[0] | bitboard[1]) & move) == 0) {
@@ -110,14 +110,14 @@ public class Connect4Logic implements Connect4 {
             }
             move <<= 1;
         }
-        return 0L;
+        return 0;
     }
 
     /**
      * @param bitboard bitboard of player
      * @return true if 4 pieces in a row, false otherwise
      */
-    boolean isWin(long bitboard) {
+    public boolean isWin(long bitboard) {
         int[] directions = {1, 7, 6, 8};
         long bb;
         for (int direction : directions) {
@@ -130,7 +130,7 @@ public class Connect4Logic implements Connect4 {
     /**
      * @return available moves
      */
-    private List<Integer> getAvailableMoves() {
+    public List<Integer> getAvailableMoves() {
         List<Integer> moves = new ArrayList<>();
         for (int i = 0; i < COLUMNS; i++) {
             if (getMove(i) != 0L) {
@@ -145,29 +145,44 @@ public class Connect4Logic implements Connect4 {
      */
     public String toString() {
         StringBuilder sb = new StringBuilder("\n");
-        for (int r = ROWS; r >= 0; r--) {
-            for (int c = 0; c < COLUMNS + 2; c++) {
-                int pos = c * (ROWS + 1) + r;
-                if (true/*r < ROWS*/) {
-                    if ((((bitboard[0] >> pos) & 1) == 1)) {
+
+        for (int y = 0; y < ROWS; y++) {
+            for (int x = 0; x < COLUMNS; x++) {
+                switch (getBoard(x, y)) {
+                    case 2:
                         sb.append("  X");
-                    } else if ((((bitboard[1] >> pos) & 1) == 1)) {
+                        break;
+                    case 1:
                         sb.append("  O");
-                    } else {
+                        break;
+                    default:
                         sb.append("  .");
-                    }
+                        break;
                 }
             }
             sb.append("\n");
         }
-
-        for(int y = 0; y < ROWS; y++) {
-            for(int x = 0; x < COLUMNS; x++) {
-                sb.append("  " + getBoard(x, y));
-            }
-            sb.append("\n");
-        }
         return sb.toString();
+    }
+
+    public static long[] toBitBoard(String s) {
+        long[] bitboard = new long[2];
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLUMNS; c++) {
+                long pos = c * (ROWS + 1) + ROWS - 1 - r;
+                switch (s.charAt(r * COLUMNS + c)) {
+                    case '2':
+                        bitboard[0] ^= 1L << pos;
+                        break;
+                    case '1':
+                        bitboard[1] ^= 1L << pos;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return bitboard;
     }
 
     /**
@@ -179,13 +194,12 @@ public class Connect4Logic implements Connect4 {
         int column = 0;
         int bestScore = Integer.MIN_VALUE;
         int score;
+        Connect4Logic c = this;
 
-        for (Integer m : getAvailableMoves()) {
-            Connect4Logic c = Connect4Logic.valueOf(this.bitboard, this.moves, this.counter);
+        for (Integer m : c.getAvailableMoves()) {
 
-            c.play(m);
-
-            score = minimax(c, 3, (counter & 1) == 1);
+            //score = evaluate(c.play(m), (c.counter & 1) == 0);
+            score = minimax(c.play(m), 2, (c.counter & 1) == 0);
 
             if (score > bestScore) {
                 bestScore = score;
@@ -203,28 +217,26 @@ public class Connect4Logic implements Connect4 {
      * @param maximizingPlayer is the player whos turn it is
      * @return the score of the current board
      */
-    private int minimax(Connect4Logic connect4, int depth, boolean maximizingPlayer) {
+    public int minimax(Connect4Logic connect4, int depth, boolean maximizingPlayer) {
         int score;
 
         Connect4Logic c = Connect4Logic.valueOf(connect4.bitboard, connect4.moves, connect4.counter);
 
         //Abbruchbedingung
         if (depth == 0 || c.isGameOver()) {
-            return evaluate(c, !maximizingPlayer);
+            return evaluate(c);
         }
 
         if (maximizingPlayer) {
             score = Integer.MIN_VALUE;
             for (Integer m : c.getAvailableMoves()) {
-                c.play(m);
-                score = Math.max(score, minimax(c, depth - 1, false));
+                score = Math.max(score, minimax(c.play(m), depth - 1, false));
             }
             return score;
         } else {
             score = Integer.MAX_VALUE;
             for (Integer m : c.getAvailableMoves()) {
-                c.play(m);
-                score = Math.min(score, minimax(c, depth - 1, true));
+                score = Math.min(score, minimax(c.play(m), depth - 1, true));
             }
             return score;
         }
@@ -233,36 +245,31 @@ public class Connect4Logic implements Connect4 {
     /**
      * Evaluate the current board.
      *
-     * @param c      is the Connect4Logic object
-     * @param player is the player who is playing either 1 or 2
+     * @param c is the Connect4Logic object
      * @return the score of the current board
      */
-    private int evaluate(Connect4Logic c, boolean player) {
-        int[] count = new int[3];
+    public int evaluate(Connect4Logic c) {
+        int score = 0;
         int size = 200;
         for (int i = 0; i < size; i++) {
-            count[random_game(c)]++;
+            score += random_game(c);
         }
-        if (player) {
-            return (int) ((float) count[1] / (float) size * 100);
-        } else {
-            return (int) ((float) count[2] / (float) size * 100);
-        }
+        return score;
     }
 
 
     /**
      * @param connect4 is the Connect4Logic object
-     * @return endState of a random game {0, 1, 2}
+     * @return endState of a random game {0, 1, -1}
      */
-    private int random_game(Connect4Logic connect4) {
+    public int random_game(Connect4Logic connect4) {
         Connect4Logic c = Connect4Logic.valueOf(connect4.bitboard, connect4.moves, connect4.counter);
 
         while (!c.isGameOver()) {
-            c.play(c.getAvailableMoves().get(new Random().nextInt(c.getAvailableMoves().size())));
+            c = c.play(c.getAvailableMoves().get(new Random().nextInt(c.getAvailableMoves().size())));
         }
         if (c.isGameOver()) {
-            return (c.counter & 1) == 0 ? 1 : 2;
+            return (c.counter & 1) == 1 ? -1 : 1;
         }
         return 0;
     }
