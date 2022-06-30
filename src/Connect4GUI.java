@@ -64,12 +64,12 @@ public class Connect4GUI extends PApplet {
 
     @Override
     public void mouseClicked() {
-        if(!connect4.isGameOver()) {
+        if (!connect4.isGameOver()) {
             for (int i = 0; i < Connect4.COLUMNS; i++) {
                 if (mouseX > i * 100 && mouseX < (i + 1) * 100) {
                     try {
-                        connect4.play(i);
-                        connect4.play(connect4.bestMove());
+                        connect4 = connect4.play(i);
+                        connect4 = connect4.play(connect4.bestMove());
                     } catch (IllegalArgumentException e) {
                         System.out.println(e.getMessage());
                     }
