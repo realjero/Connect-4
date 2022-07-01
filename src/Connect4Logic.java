@@ -14,6 +14,7 @@ public class Connect4Logic implements Connect4 {
      * Each player has a 64 bit bitboard that represents the board.
      */
     private long[] bitboard;
+
     private long[] moves;
     private int counter;
 
@@ -84,7 +85,7 @@ public class Connect4Logic implements Connect4 {
      */
     public Connect4Logic undoMove() {
         Connect4Logic c = Connect4Logic.valueOf(this.bitboard, this.moves, this.counter);
-        if(c.counter == 0) throw new RuntimeException("No moves to undo");
+        if (c.counter == 0) throw new RuntimeException("No moves to undo");
         c.counter--;
         c.bitboard[c.counter & 1] ^= c.moves[c.counter];
         c.moves[c.counter] = 0;
@@ -93,11 +94,23 @@ public class Connect4Logic implements Connect4 {
     }
 
     /**
-     * @return true if the game is over, false otherwise
+     * @return 0 if game is not over, 1 if player 0 wins, 2 if player 1 wins, 3 if draw.
      */
     @Override
+    public int intIsGameOver() {
+        if (isWin(bitboard[0])) return 1;
+        if (isWin(bitboard[1])) return 2;
+        if ((bitboard[0] ^ bitboard[1]) == 0b0111111_0111111_0111111_0111111_0111111_0111111_0111111L) return 3;
+        return 0;
+    }
+
+    /**
+     * @return true if game is over, false otherwise.
+     */
     public boolean isGameOver() {
-        return isWin(bitboard[0]) || isWin(bitboard[1]) || (bitboard[0] ^ bitboard[1]) == 0b0111111_0111111_0111111_0111111_0111111_0111111_0111111L;
+        if (isWin(bitboard[0])) return true;
+        if (isWin(bitboard[1])) return true;
+        return (bitboard[0] ^ bitboard[1]) == 0b0111111_0111111_0111111_0111111_0111111_0111111_0111111L;
     }
 
     /**
@@ -137,8 +150,13 @@ public class Connect4Logic implements Connect4 {
         return 0;
     }
 
+    /**
+     * @param column column of piece
+     * @return position of lowest empty row in column
+     */
     public int getNextHeight(int column) {
         long move = getMove(column) >> (column * 7);
+        if (move == 0L || move == 0b1000000L) return 0;
         return Long.toBinaryString(move).length();
     }
 
