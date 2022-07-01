@@ -68,6 +68,22 @@ class UnitTests {
 
     @Test
     void play() {
+        long[] bitboard = Connect4Logic.toBitBoard("0000000" +
+                "0000000" +
+                "0000000" +
+                "0000000" +
+                "0000000" +
+                "2121212");
 
+        Connect4Logic c = new Connect4Logic();
+        c = c.play(0);
+        c = c.play(1);
+        c = c.play(2);
+        c = c.play(3);
+        c = c.play(4);
+        c = c.play(5);
+        c = c.play(6);
+
+        assertTrue(c.compare(bitboard));
     }
 }
