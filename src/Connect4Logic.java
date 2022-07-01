@@ -84,7 +84,7 @@ public class Connect4Logic implements Connect4 {
      */
     public Connect4Logic undoMove() {
         Connect4Logic c = Connect4Logic.valueOf(this.bitboard, this.moves, this.counter);
-
+        if(c.counter == 0) throw new RuntimeException("No moves to undo");
         c.counter--;
         c.bitboard[c.counter & 1] ^= c.moves[c.counter];
         c.moves[c.counter] = 0;
@@ -135,6 +135,11 @@ public class Connect4Logic implements Connect4 {
             move <<= 1;
         }
         return 0;
+    }
+
+    public int getNextHeight(int column) {
+        long move = getMove(column) >> (column * 7);
+        return Long.toBinaryString(move).length();
     }
 
     /**
