@@ -76,6 +76,16 @@ public class Connect4Logic implements Connect4 {
         return c;
     }
 
+    public Connect4Logic undoMove() {
+        Connect4Logic c = Connect4Logic.valueOf(this.bitboard, this.moves, this.counter);
+
+        c.counter--;
+        c.bitboard[c.counter & 1] ^= c.moves[c.counter];
+        c.moves[c.counter] = 0;
+
+        return c;
+    }
+
     /**
      * @return true if the game is over, false otherwise
      */
@@ -198,7 +208,7 @@ public class Connect4Logic implements Connect4 {
 
         for (Integer m : c.getAvailableMoves()) {
 
-            //score = evaluate(c.play(m), (c.counter & 1) == 0);
+            //score = evaluate(c.play(m));
             score = minimax(c.play(m), 2, (c.counter & 1) == 0);
 
             if (score > bestScore) {
@@ -272,5 +282,9 @@ public class Connect4Logic implements Connect4 {
             return (c.counter & 1) == 1 ? -1 : 1;
         }
         return 0;
+    }
+
+    public boolean compareTo(long[] bitboard) {
+        return Arrays.equals(this.bitboard, bitboard);
     }
 }
