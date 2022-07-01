@@ -75,12 +75,10 @@ public class Connect4GUI extends PApplet {
                         }
                         fill(color);
                         int height = Connect4.ROWS - (connect4.getNextHeight(c));
-                        System.out.println(height);
                         if (height < Connect4.ROWS) {
                             ellipse(c * 100 + 50, height * 100 + 50, 90, 90);
                         }
                     }
-
                 }
             }
         }
