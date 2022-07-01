@@ -84,6 +84,6 @@ class UnitTests {
         c = c.play(5);
         c = c.play(6);
 
-        assertTrue(c.compare(bitboard));
+        assertTrue(c.compareTo(bitboard));
     }
 }
