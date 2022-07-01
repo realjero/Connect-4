@@ -3,9 +3,12 @@ public interface Connect4 {
     int ROWS = 6;
 
     Connect4Logic play(int column);
+
     Connect4Logic undoMove();
 
     int bestMove();
+
+    int intIsGameOver();
 
     boolean isGameOver();
 
