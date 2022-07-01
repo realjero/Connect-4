@@ -67,6 +67,18 @@ class UnitTests {
     }
 
     @Test
+    public void isTie() {
+        long[] bitboard = Connect4Logic.toBitBoard("2121212" +
+                "2121212" +
+                "2121212" +
+                "1212121" +
+                "1212121" +
+                "1212121");
+        Connect4Logic c = Connect4Logic.valueOf(bitboard, new long[]{}, 0);
+        assertEquals(3, c.intIsGameOver());
+    }
+
+    @Test
     void play() {
         long[] bitboard = Connect4Logic.toBitBoard("0000000" +
                 "0000000" +
