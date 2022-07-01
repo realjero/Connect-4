@@ -58,6 +58,7 @@ public class Connect4Logic implements Connect4 {
      * Plays a move on the board.
      *
      * @param column column to drop piece
+     * @return a copy of Connect4Logic with given move
      */
     @Override
     public Connect4Logic play(int column) {
@@ -76,6 +77,11 @@ public class Connect4Logic implements Connect4 {
         return c;
     }
 
+    /**
+     * Undo the last move.
+     *
+     * @return a copy of Connect4Logic without the last move.
+     */
     public Connect4Logic undoMove() {
         Connect4Logic c = Connect4Logic.valueOf(this.bitboard, this.moves, this.counter);
 
@@ -94,6 +100,11 @@ public class Connect4Logic implements Connect4 {
         return isWin(bitboard[0]) || isWin(bitboard[1]) || (bitboard[0] ^ bitboard[1]) == 0b0111111_0111111_0111111_0111111_0111111_0111111_0111111L;
     }
 
+    /**
+     * @param column column of piece
+     * @param row    row of piece
+     * @return state of piece at given row and column
+     */
     @Override
     public int getBoard(int column, int row) {
         long pos = (long) column * (ROWS + 1) + ROWS - 1 - row;
@@ -102,6 +113,9 @@ public class Connect4Logic implements Connect4 {
         return 0;
     }
 
+    /**
+     * @return true if player 2 has turn, false otherwise.
+     */
     @Override
     public boolean getPlayer() {
         return (counter & 1) == 1;
@@ -138,7 +152,7 @@ public class Connect4Logic implements Connect4 {
     }
 
     /**
-     * @return available moves
+     * @return list available moves
      */
     public List<Integer> getAvailableMoves() {
         List<Integer> moves = new ArrayList<>();
@@ -175,6 +189,10 @@ public class Connect4Logic implements Connect4 {
         return sb.toString();
     }
 
+    /**
+     * @param s string to parse
+     * @return bitboard of given string
+     */
     public static long[] toBitBoard(String s) {
         long[] bitboard = new long[2];
         for (int r = 0; r < ROWS; r++) {
@@ -284,6 +302,10 @@ public class Connect4Logic implements Connect4 {
         return 0;
     }
 
+    /**
+     * @param bitboard bitboard to compareTo
+     * @return true if equal, false otherwise
+     */
     public boolean compareTo(long[] bitboard) {
         return Arrays.equals(this.bitboard, bitboard);
     }
