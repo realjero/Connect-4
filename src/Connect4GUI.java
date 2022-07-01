@@ -69,7 +69,10 @@ public class Connect4GUI extends PApplet {
                 if (mouseX > i * 100 && mouseX < (i + 1) * 100) {
                     try {
                         connect4 = connect4.play(i);
+                        long startTime = System.nanoTime();
                         connect4 = connect4.play(connect4.bestMove());
+                        long endTime = System.nanoTime();
+                        System.out.println((endTime - startTime) / 1000000 + " ms");
                     } catch (IllegalArgumentException e) {
                         System.out.println(e.getMessage());
                     }
