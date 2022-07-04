@@ -79,7 +79,7 @@ class UnitTests {
     }
 
     @Test
-    void play() {
+    public void play() {
         long[] bitboard = Connect4Logic.toBitBoard("0000000" +
                 "0000000" +
                 "0000000" +
@@ -97,5 +97,17 @@ class UnitTests {
         c = c.play(6);
 
         assertTrue(c.compareTo(bitboard));
+    }
+
+    public void undoMove() {
+
+    }
+
+    public void getMove() {
+
+    }
+
+    public void getAvailableMoves() {
+
     }
 }
