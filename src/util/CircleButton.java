@@ -13,7 +13,7 @@ public class CircleButton extends Button {
         p.noStroke();
         p.ellipse(x, y, w, h);
 
-        if(mouseOverButton(p.mouseX, p.mouseY)) {
+        if(mouseOver(p.mouseX, p.mouseY)) {
             p.fill(255);
         } else {
             p.fill(p.color(52, 73, 94));
@@ -24,7 +24,7 @@ public class CircleButton extends Button {
         p.text(label, x - p.textWidth(label) / 2, y + p.textDescent() + 5);
     }
 
-    public boolean mouseOverButton(int mouseX, int mouseY) {
+    public boolean mouseOver(int mouseX, int mouseY) {
         return Math.sqrt(Math.pow(x - mouseX, 2) + Math.pow(y - mouseY, 2)) <= w / 2;
     }
 }

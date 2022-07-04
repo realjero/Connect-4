@@ -9,6 +9,7 @@ public abstract class Button {
     protected int size;
 
     public Button(int x, int y, int w, int h, String label, int size) {
+        //Center the button on the x and y coordinates
         this.x = x - w / 2;
         this.y = y - h / 2;
         this.w = w;
@@ -19,7 +20,5 @@ public abstract class Button {
 
     public abstract void draw(PApplet p);
 
-    public boolean mouseOverButton(int mouseX, int mouseY) {
-        return mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h;
-    }
+    public abstract boolean mouseOver(int mouseX, int mouseY);
 }
