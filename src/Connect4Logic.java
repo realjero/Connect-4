@@ -3,6 +3,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+//TODO: Die Logging-Ausgabe erlaubt es, den Algorithmus in seiner Arbeitsweise nachzuvollziehen
+//TODO: DOKUMENTATION
 
 /**
  * @author Jerome Habanz
@@ -17,6 +19,8 @@ public class Connect4Logic implements Connect4 {
 
     private long[] moves;
     private int counter;
+    final int COLUMNS = Connect4.COLUMNS;
+    final int ROWS = Connect4.ROWS;
 
     /**
      * The constructor initializes the bitboard, the moves array and the counter as a new game.
@@ -61,9 +65,7 @@ public class Connect4Logic implements Connect4 {
      * @param column column to drop piece
      * @return a copy of Connect4Logic with given move
      */
-    @Override
     public Connect4Logic play(int column) {
-
         long move = getMove(column);
 
         if (column < 0 || column >= COLUMNS) throw new IllegalArgumentException("Invalid column");
@@ -96,7 +98,6 @@ public class Connect4Logic implements Connect4 {
     /**
      * @return 0 if game is not over, 1 if player 0 wins, 2 if player 1 wins, 3 if draw.
      */
-    @Override
     public int intIsGameOver() {
         if (isWin(bitboard[0])) return 1;
         if (isWin(bitboard[1])) return 2;
@@ -108,9 +109,8 @@ public class Connect4Logic implements Connect4 {
      * @return true if game is over, false otherwise.
      */
     public boolean isGameOver() {
-        if (isWin(bitboard[0])) return true;
-        if (isWin(bitboard[1])) return true;
-        return (bitboard[0] ^ bitboard[1]) == 0b0111111_0111111_0111111_0111111_0111111_0111111_0111111L;
+        if (intIsGameOver() != 0) return true;
+        return false;
     }
 
     /**
@@ -118,7 +118,6 @@ public class Connect4Logic implements Connect4 {
      * @param row    row of piece
      * @return state of piece at given row and column
      */
-    @Override
     public int getBoard(int column, int row) {
         long pos = (long) column * (ROWS + 1) + ROWS - 1 - row;
         if (((bitboard[0] >> pos) & 1) == 1) return 2;
@@ -129,7 +128,6 @@ public class Connect4Logic implements Connect4 {
     /**
      * @return true if player 2 has turn, false otherwise.
      */
-    @Override
     public boolean getPlayer() {
         return (counter & 1) == 1;
     }
@@ -202,7 +200,7 @@ public class Connect4Logic implements Connect4 {
                     case 1:
                         sb.append("  O");
                         break;
-                    default:
+                    case 0:
                         sb.append("  .");
                         break;
                 }
@@ -218,10 +216,11 @@ public class Connect4Logic implements Connect4 {
      */
     public static long[] toBitBoard(String s) {
         long[] bitboard = new long[2];
-        for (int r = 0; r < ROWS; r++) {
-            for (int c = 0; c < COLUMNS; c++) {
-                long pos = c * (ROWS + 1) + ROWS - 1 - r;
-                switch (s.charAt(r * COLUMNS + c)) {
+
+        for (int r = 0; r < Connect4.ROWS; r++) {
+            for (int c = 0; c < Connect4.COLUMNS; c++) {
+                long pos = c * (Connect4.ROWS + 1) + Connect4.ROWS - 1 - r;
+                switch (s.charAt(r * Connect4.COLUMNS + c)) {
                     case '2':
                         bitboard[0] ^= 1L << pos;
                         break;
@@ -265,7 +264,7 @@ public class Connect4Logic implements Connect4 {
      *
      * @param connect4         is the Connect4Logic object
      * @param depth            maximum depth of the tree
-     * @param maximizingPlayer is the player whos turn it is
+     * @param maximizingPlayer is the player whose turn it is
      * @return the score of the current board
      */
     public int minimax(Connect4Logic connect4, int depth, boolean maximizingPlayer) {
