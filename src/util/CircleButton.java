@@ -13,7 +13,7 @@ public class CircleButton extends Button {
         p.noStroke();
         p.ellipse(x, y, w, h);
 
-        if(mouseOver(p.mouseX, p.mouseY)) {
+        if (mouseOver(p.mouseX, p.mouseY)) {
             p.fill(255);
         } else {
             p.fill(p.color(52, 73, 94));

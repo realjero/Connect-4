@@ -1,11 +1,10 @@
 package util;
 
 import processing.core.PApplet;
-import processing.core.PFont;
+
 public abstract class Button {
     protected int x, y, w, h;
     protected String label;
-    protected PFont font;
     protected int size;
 
     public Button(int x, int y, int w, int h, String label, int size) {

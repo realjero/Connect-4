@@ -2,7 +2,7 @@ package util;
 
 import processing.core.PApplet;
 
-public class SelectButton extends Button{
+public class SelectButton extends Button {
     public SelectButton(int x, int y, String label) {
         super(x, y, 500, 100, label, 50);
     }
@@ -13,7 +13,7 @@ public class SelectButton extends Button{
         p.noStroke();
         p.rect(x, y, w, h);
 
-        if(mouseOver(p.mouseX, p.mouseY)) {
+        if (mouseOver(p.mouseX, p.mouseY)) {
             p.fill(255);
         } else {
             p.fill(p.color(52, 73, 94));
