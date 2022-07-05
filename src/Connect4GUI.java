@@ -73,18 +73,12 @@ public class Connect4GUI extends PApplet {
         if (connect4.isGameOver()) {
             fill(color(236, 240, 241));
             textSize(50);
-            String label = "";
-            switch (connect4.intIsGameOver()) {
-                case 1:
-                    label = "YELLOW WON";
-                    break;
-                case 2:
-                    label = "RED WON";
-                    break;
-                case 3:
-                    label = "TIE";
-                    break;
-            }
+            String label = switch (connect4.intIsGameOver()) {
+                case 1 -> "YELLOW WON";
+                case 2 -> "RED WON";
+                case 3 -> "TIE";
+                default -> "";
+            };
             text(label, width / 2 - textWidth(label) / 2, height - textDescent());
         }
 
@@ -92,17 +86,11 @@ public class Connect4GUI extends PApplet {
         //Draw the Board
         for (int c = 0; c < Connect4.COLUMNS; c++) {
             for (int r = 0; r < Connect4.ROWS; r++) {
-                switch (connect4.getBoard(c, r)) {
-                    case 1:
-                        color = color(231, 76, 60);
-                        break;
-                    case 2:
-                        color = color(241, 196, 15);
-                        break;
-                    default:
-                        color = color(236, 240, 241);
-                        break;
-                }
+                color = switch (connect4.getBoard(c, r)) {
+                    case 1 -> color(231, 76, 60);
+                    case 2 -> color(241, 196, 15);
+                    default -> color(236, 240, 241);
+                };
 
                 noStroke();
                 fill(color);
@@ -124,8 +112,8 @@ public class Connect4GUI extends PApplet {
     }
 
     public void mouseClicked() {
-        if (!service.isTerminated()) {
-            service.submit(() -> mouseOverAnyButton());
+        if (!service.isShutdown()) {
+            service.submit(this::mouseOverAnyButton);
         }
     }
 
@@ -143,10 +131,7 @@ public class Connect4GUI extends PApplet {
             } else {
                 if (buttonUndo.mouseOver(mouseX, mouseY)) {
                     connect4 = connect4.undoMove();
-                    if (withAI) {
-                        connect4 = connect4.undoMove();
-                    }
-
+                    if (withAI) connect4 = connect4.undoMove();
                 }
 
                 if (buttonMenu.mouseOver(mouseX, mouseY)) {
@@ -157,7 +142,9 @@ public class Connect4GUI extends PApplet {
                 if (!connect4.isGameOver() && mouseY < height - 100) {
                     connect4 = connect4.play(mouseX / 100);
                     if (withAI) {
+                        long startTime = System.nanoTime();
                         connect4 = connect4.play(connect4.bestMove());
+                        System.out.println((System.nanoTime() - startTime) / 1000000 + " ms");
                     }
                 }
             }
