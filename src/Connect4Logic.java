@@ -188,7 +188,7 @@ public class Connect4Logic implements Connect4 {
     /**
      * @return Board as String
      */
-    public String toString() {
+    public String toString() {//jshell doesnt render this well
         StringBuilder sb = new StringBuilder("\n");
 
         for (int y = 0; y < ROWS; y++) {
@@ -242,20 +242,24 @@ public class Connect4Logic implements Connect4 {
      */
     public int bestMove() {
         int column = 0;
-        int bestScore = Integer.MIN_VALUE;
+        int bestScore = Integer.MIN_VALUE; // min for MAX OR max for MIN
         int score;
         Connect4Logic c = this;
 
         for (Integer m : c.getAvailableMoves()) {
 
             //score = evaluate(c.play(m));
-            score = minimax(c.play(m), 2, (c.counter & 1) == 0);
+            score = minimax(c.play(m), 0, true); // TRUE OR FALSE (c.counter & 1) == 0
 
-            if (score > bestScore) {
+            System.out.println("Move: " + m + " Score: " + score);
+
+            if (score > bestScore) { // MAXimize OR MINimize the score
                 bestScore = score;
                 column = m;
             }
         }
+
+        System.out.println("Best move: " + column + " BestScore: " + bestScore);
         return column;
     }
 
@@ -300,7 +304,7 @@ public class Connect4Logic implements Connect4 {
      */
     public int evaluate(Connect4Logic c) {
         int score = 0;
-        int size = 200;
+        int size = 500;
         for (int i = 0; i < size; i++) {
             score += random_game(c);
         }
@@ -319,7 +323,7 @@ public class Connect4Logic implements Connect4 {
             c = c.play(c.getAvailableMoves().get(new Random().nextInt(c.getAvailableMoves().size())));
         }
         if (c.isGameOver()) {
-            return (c.counter & 1) == 1 ? -1 : 1;
+            return c.getPlayer() ? -1 : 1;
         }
         return 0;
     }
