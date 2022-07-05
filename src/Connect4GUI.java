@@ -125,9 +125,7 @@ public class Connect4GUI extends PApplet {
 
     public void mouseClicked() {
         if (!service.isTerminated()) {
-            service.submit(() -> {
-                mouseOverAnyButton();
-            });
+            service.submit(() -> mouseOverAnyButton());
         }
     }
 
