@@ -7,28 +7,28 @@ import util.CircleButton;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * @author Jerome Habanz
+ */
 public class Connect4GUI extends PApplet {
     Connect4 connect4;
     Button buttonPvC, buttonPvP, buttonUndo, buttonMenu;
     boolean inMenu;
     boolean withAI;
     PFont font;
-    ExecutorService service;
+    ExecutorService buttonListener;
 
     public static void main(String[] args) {
         PApplet.runSketch(new String[]{"Connect 4"}, new Connect4GUI());
     }
 
+    /**
+     * Initialize the game
+     */
     public void settings() {
         size(Connect4.COLUMNS * 100, (Connect4.ROWS + 1) * 100);
-        service = Executors.newSingleThreadExecutor();
-    }
 
-    public void setup() {
-        background(color(44, 62, 80));
-        connect4 = new Connect4Logic();
-
-        font = createFont("files/Oswald-Bold.ttf", 24);
+        buttonListener = Executors.newSingleThreadExecutor();
 
         buttonPvC = new SelectButton(width / 2, height / 2, "PLAYER VS COMPUTER");
         buttonPvP = new SelectButton(width / 2, height / 2 + 110, "PLAYER VS PLAYER");
@@ -37,8 +37,18 @@ public class Connect4GUI extends PApplet {
 
         inMenu = true;
         withAI = false;
+
+        connect4 = new Connect4Logic();
     }
 
+    public void setup() {
+        background(color(44, 62, 80));
+        font = createFont("files/Oswald-Bold.ttf", 24);
+    }
+
+    /**
+     * Drawing menu or board depending on inMenu
+     */
     public void draw() {
         if (inMenu) {
             drawMenu();
@@ -47,6 +57,9 @@ public class Connect4GUI extends PApplet {
         }
     }
 
+    /**
+     * Draw menu with buttons
+     */
     public void drawMenu() {
         background(color(44, 62, 80));
 
@@ -61,6 +74,9 @@ public class Connect4GUI extends PApplet {
         buttonPvP.draw(this);
     }
 
+    /**
+     * Draw GameOver text, the board and the current piece on mouse x
+     */
     public void drawBoard() {
         background(color(44, 62, 80));
         int color;
@@ -111,12 +127,18 @@ public class Connect4GUI extends PApplet {
         }
     }
 
+    /**
+     * Generate a thread detecting any mouse Collision with button while rendering the board
+     */
     public void mouseClicked() {
-        if (!service.isShutdown()) {
-            service.submit(this::mouseOverAnyButton);
+        if (!buttonListener.isShutdown()) {
+            buttonListener.submit(this::mouseOverAnyButton);
         }
     }
 
+    /**
+     * Check for any mouse collision with buttons
+     */
     public void mouseOverAnyButton() {
         try {
             if (inMenu) {

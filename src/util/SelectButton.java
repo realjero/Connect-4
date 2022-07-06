@@ -2,6 +2,9 @@ package util;
 
 import processing.core.PApplet;
 
+/**
+ * @author Jerome Habanz
+ */
 public class SelectButton extends Button {
     public SelectButton(int x, int y, String label) {
         super(x, y, 500, 100, label, 50);

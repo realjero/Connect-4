@@ -2,6 +2,9 @@ package util;
 
 import processing.core.PApplet;
 
+/**
+ * @author Jerome Habanz
+ */
 public class CircleButton extends Button {
     public CircleButton(int x, int y, String label) {
         super(x + 75 / 2, y + 75 / 2, 75, 75, label, 20);

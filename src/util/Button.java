@@ -2,6 +2,9 @@ package util;
 
 import processing.core.PApplet;
 
+/**
+ * @author Jerome Habanz
+ */
 public abstract class Button {
     protected int x, y, w, h;
     protected String label;
