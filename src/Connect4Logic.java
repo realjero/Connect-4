@@ -5,6 +5,8 @@ import java.util.Random;
 
 //TODO: Die Logging-Ausgabe erlaubt es, den Algorithmus in seiner Arbeitsweise nachzuvollziehen
 //TODO: DOKUMENTATION
+//TODO: TESTs fertigstellen
+//TODO: Zobrist hashing
 
 /**
  * @author Jerome Habanz
