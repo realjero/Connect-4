@@ -1,13 +1,14 @@
 package util;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 
 /**
  * @author Jerome Habanz
  */
 public class CircleButton extends Button {
-    public CircleButton(int x, int y, String label) {
-        super(x + 75 / 2, y + 75 / 2, 75, 75, label, 20);
+    public CircleButton(int x, int y, String label, PFont font) {
+        super(x + 75 / 2, y + 75 / 2, 75, 75, label, 20, font);
     }
 
     public void draw(PApplet p) {
@@ -21,7 +22,7 @@ public class CircleButton extends Button {
         } else {
             p.fill(p.color(52, 73, 94));
         }
-        p.textFont(p.createFont("files/Oswald-Bold.ttf", 24));
+        p.textFont(font);
         p.textSize(size);
 
         p.text(label, x - p.textWidth(label) / 2, y + p.textDescent() + 5);

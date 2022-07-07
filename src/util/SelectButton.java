@@ -1,13 +1,14 @@
 package util;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 
 /**
  * @author Jerome Habanz
  */
 public class SelectButton extends Button {
-    public SelectButton(int x, int y, String label) {
-        super(x, y, 500, 100, label, 50);
+    public SelectButton(int x, int y, String label, PFont font) {
+        super(x, y, 500, 100, label, 50, font);
     }
 
     public void draw(PApplet p) {
@@ -22,7 +23,7 @@ public class SelectButton extends Button {
             p.fill(p.color(52, 73, 94));
         }
 
-        p.textFont(p.createFont("files/Oswald-Bold.ttf", 24));
+        p.textFont(font);
         p.textSize(size);
 
         p.text(label, x + w / 2 - p.textWidth(label) / 2, y + h / 2 + p.textDescent() + 5);
