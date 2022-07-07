@@ -117,9 +117,8 @@ public class Connect4GUI extends PApplet {
 
 
         //Draw the current player on mouse X
-        color = connect4.getPlayer() ? color(243, 165, 157) : color(248, 225, 135);
+        fill(connect4.getPlayer() ? color(243, 165, 157) : color(248, 225, 135));
 
-        fill(color);
         int height = Connect4.ROWS - (connect4.getNextHeight(mouseX / 100));
 
         if (height < Connect4.ROWS) {
@@ -145,6 +144,10 @@ public class Connect4GUI extends PApplet {
                 if (buttonPvC.mouseOver(mouseX, mouseY)) {
                     inMenu = false;
                     withAI = true;
+                    connect4 = new Connect4Logic();
+
+                    //AI FIRST
+                    //connect4 = connect4.play(connect4.bestMove());
                 }
                 if (buttonPvP.mouseOver(mouseX, mouseY)) {
                     inMenu = false;
@@ -153,12 +156,9 @@ public class Connect4GUI extends PApplet {
             } else {
                 if (buttonUndo.mouseOver(mouseX, mouseY)) {
                     connect4 = connect4.undoMove();
-                    if (withAI) connect4 = connect4.undoMove();
                 }
-
                 if (buttonMenu.mouseOver(mouseX, mouseY)) {
                     inMenu = true;
-                    connect4 = new Connect4Logic();
                 }
 
                 if (!connect4.isGameOver() && mouseY < height - 100) {

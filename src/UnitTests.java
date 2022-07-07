@@ -110,4 +110,8 @@ class UnitTests {
     public void getAvailableMoves() {
 
     }
+
+    public void getHeigth() {
+
+    }
 }
