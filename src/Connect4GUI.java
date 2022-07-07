@@ -30,11 +30,6 @@ public class Connect4GUI extends PApplet {
 
         buttonListener = Executors.newSingleThreadExecutor();
 
-        buttonPvC = new SelectButton(width / 2, height / 2, "PLAYER VS COMPUTER");
-        buttonPvP = new SelectButton(width / 2, height / 2 + 110, "PLAYER VS PLAYER");
-        buttonUndo = new CircleButton(width - 50, height - 40, "UNDO");
-        buttonMenu = new CircleButton(width - 150, height - 40, "MENU");
-
         inMenu = true;
         withAI = false;
 
@@ -44,6 +39,11 @@ public class Connect4GUI extends PApplet {
     public void setup() {
         background(color(44, 62, 80));
         font = createFont("files/Oswald-Bold.ttf", 24);
+        buttonPvC = new SelectButton(width / 2, height / 2, "PLAYER VS COMPUTER", font);
+        buttonPvP = new SelectButton(width / 2, height / 2 + 110, "PLAYER VS PLAYER", font);
+        buttonUndo = new CircleButton(width - 50, height - 40, "UNDO", font);
+        buttonMenu = new CircleButton(width - 150, height - 40, "MENU", font);
+
     }
 
     /**
