@@ -117,12 +117,14 @@ public class Connect4GUI extends PApplet {
 
 
         //Draw the current player on mouse X
-        fill(connect4.getPlayer() ? color(243, 165, 157) : color(248, 225, 135));
+        if(!buttonListener.isShutdown()) {
+            fill(connect4.getPlayer() ? color(243, 165, 157) : color(248, 225, 135));
 
-        int height = Connect4.ROWS - (connect4.getNextHeight(mouseX / 100));
+            int height = Connect4.ROWS - (connect4.getNextHeight(mouseX / 100));
 
-        if (height < Connect4.ROWS) {
-            ellipse(mouseX / 100 * 100 + 50, height * 100 + 50, 90, 90);
+            if (height < Connect4.ROWS) {
+                ellipse(mouseX / 100 * 100 + 50, height * 100 + 50, 90, 90);
+            }
         }
     }
 

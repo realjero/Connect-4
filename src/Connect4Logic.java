@@ -19,6 +19,7 @@ public class Connect4Logic implements Connect4 {
     private int counter;
     final int COLUMNS = Connect4.COLUMNS;
     final int ROWS = Connect4.ROWS;
+    final int difficulty = 3;
 
     /**
      * The constructor initializes the bitboard, the moves array and the counter as a new game.
@@ -243,10 +244,10 @@ public class Connect4Logic implements Connect4 {
 
         for (Integer m : c.getAvailableMoves()) {
 
-            //score = evaluate(c.play(m)); // 13ms //working
-            //score = minimax(c.play(m), 1, false); // 624ms //working
-            score = -negamax(c.play(m), 2, false); // 570ms //depth changes outcome
-            //score = -alphabeta(c.play(m), 1, Integer.MAX_VALUE, Integer.MIN_VALUE, false); // 151ms
+            //score = evaluate(c.play(m)); // 85 ms //working
+            //score = minimax(c.play(m), difficulty, false); // 2331 ms //working
+            //score = negamax(c.play(m), difficulty, false); // 2441 ms //working?
+            score = alphabeta(c.play(m), difficulty, Integer.MIN_VALUE, Integer.MAX_VALUE, false); // 103 ms //working?
 
             System.out.println("MOVE: " + m + " MAX: " + score);
 
@@ -282,17 +283,27 @@ public class Connect4Logic implements Connect4 {
             score = Integer.MIN_VALUE;
             for (Integer m : c.getAvailableMoves()) {
                 score = Math.max(score, minimax(c.play(m), depth - 1, false));
+                System.out.println("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
             }
         } else {
             score = Integer.MAX_VALUE;
             for (Integer m : c.getAvailableMoves()) {
                 score = Math.min(score, minimax(c.play(m), depth - 1, true));
+                System.out.println("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
             }
         }
 
         return score;
     }
 
+    /**
+     * Based on Negamax algorithm.
+     *
+     * @param connect4         is the Connect4Logic object
+     * @param depth            maximum depth of the tree
+     * @param maximizingPlayer is the player whose turn it is
+     * @return the score of the current board
+     */
     public int negamax(Connect4Logic connect4, int depth, boolean maximizingPlayer) {
         int score;
 
@@ -300,17 +311,27 @@ public class Connect4Logic implements Connect4 {
 
         //Abbruchbedingung
         if (depth == 0 || c.isGameOver()) {
-            return maximizingPlayer ? -evaluate(c) : evaluate(c);
+            return evaluate(c);
         }
 
         score = Integer.MIN_VALUE;
-        for(Integer m : c.getAvailableMoves()) {
+        for (Integer m : c.getAvailableMoves()) {
             score = Math.max(score, -negamax(c.play(m), depth - 1, !maximizingPlayer));
-            System.out.println("\t".repeat(3 - depth) + "MOVE: " + m + (maximizingPlayer ? "MAX: " : "MIN : ") + score);
+            System.out.println("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
         }
         return score;
     }
 
+    /**
+     * Based on Negamax algorithm with alpha-beta pruning.
+     *
+     * @param connect4         is the Connect4Logic object
+     * @param depth            maximum depth of the tree
+     * @param alpha            lower bound of the score
+     * @param beta             upper bound of the score
+     * @param maximizingPlayer is the player whose turn it is
+     * @return the score of the current board
+     */
     public int alphabeta(Connect4Logic connect4, int depth, int alpha, int beta, boolean maximizingPlayer) {
         int score;
 
@@ -318,20 +339,20 @@ public class Connect4Logic implements Connect4 {
 
         //Abbruchbedingung
         if (depth == 0 || c.isGameOver()) {
-            return maximizingPlayer ? evaluate(c) : -evaluate(c);
+            return evaluate(c);
         }
 
         score = Integer.MIN_VALUE;
-        for(Integer m : c.getAvailableMoves()) {
+        for (Integer m : c.getAvailableMoves()) {
             score = Math.max(score, -alphabeta(c.play(m), depth - 1, -beta, -alpha, !maximizingPlayer));
+            System.out.println("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
             alpha = Math.max(alpha, score);
-            if(alpha >= beta) {
+            if (alpha >= beta) {
                 break;
             }
         }
         return score;
     }
-
 
     /**
      * Evaluate the current board.
