@@ -1,7 +1,5 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.security.Key;
+import java.util.*;
 
 //TODO: Die Logging-Ausgabe erlaubt es, den Algorithmus in seiner Arbeitsweise nachzuvollziehen
 //TODO: DOKUMENTATION
@@ -21,15 +19,17 @@ public class Connect4Logic implements Connect4 {
     private int counter;
     final int COLUMNS = Connect4.COLUMNS;
     final int ROWS = Connect4.ROWS;
-    final int difficulty = 3;
+    final int difficulty = 2;
+
+    static HashMap<Integer, Integer> table = new HashMap<>();
 
     /**
      * The constructor initializes the bitboard, the moves array and the counter as a new game.
      */
     public Connect4Logic() {
-        bitboard = new long[2];
-        counter = 0;
-        moves = new long[ROWS * COLUMNS];
+        this.bitboard = new long[2];
+        this.counter = 0;
+        this.moves = new long[ROWS * COLUMNS];
     }
 
     /**
@@ -232,6 +232,10 @@ public class Connect4Logic implements Connect4 {
         return bitboard;
     }
 
+    public int hashCode() {
+        return Objects.hash(bitboard);
+    }
+
 
     /**
      * Check for any higher score and make it the best move.
@@ -248,7 +252,6 @@ public class Connect4Logic implements Connect4 {
 
             //score = evaluate(c.play(m)); // 85 ms //working
             //score = minimax(c.play(m), difficulty, false); // 2331 ms //working
-            //score = negamax(c.play(m), difficulty, false); // 2441 ms //working?
             score = alphabeta(c.play(m), difficulty, Integer.MIN_VALUE, Integer.MAX_VALUE, false); // 103 ms //working?
 
             System.out.println("MOVE: " + m + " MAX: " + score);
@@ -299,32 +302,6 @@ public class Connect4Logic implements Connect4 {
     }
 
     /**
-     * Based on Negamax algorithm.
-     *
-     * @param connect4         is the Connect4Logic object
-     * @param depth            maximum depth of the tree
-     * @param maximizingPlayer is the player whose turn it is
-     * @return the score of the current board
-     */
-    public int negamax(Connect4Logic connect4, int depth, boolean maximizingPlayer) {
-        int score;
-
-        Connect4Logic c = Connect4Logic.valueOf(connect4.bitboard, connect4.moves, connect4.counter);
-
-        //Abbruchbedingung
-        if (depth == 0 || c.isGameOver()) {
-            return evaluate(c);
-        }
-
-        score = Integer.MIN_VALUE;
-        for (Integer m : c.getAvailableMoves()) {
-            score = Math.max(score, -negamax(c.play(m), depth - 1, !maximizingPlayer));
-            System.out.println("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
-        }
-        return score;
-    }
-
-    /**
      * Based on Negamax algorithm with alpha-beta pruning.
      *
      * @param connect4         is the Connect4Logic object
@@ -339,18 +316,39 @@ public class Connect4Logic implements Connect4 {
 
         Connect4Logic c = Connect4Logic.valueOf(connect4.bitboard, connect4.moves, connect4.counter);
 
-        //Abbruchbedingung
-        if (depth == 0 || c.isGameOver()) {
-            return evaluate(c);
+        if(depth == 0 || connect4.isGameOver()) {
+            int code = c.hashCode();
+            if(table != null && table.containsKey(code)) {
+                return table.get(code);
+            }
+            int v = maximizingPlayer ? -evaluate(c) : evaluate(c);
+            table.put(code, v);
+            return v;
         }
 
-        score = Integer.MIN_VALUE;
-        for (Integer m : c.getAvailableMoves()) {
-            score = Math.max(score, -alphabeta(c.play(m), depth - 1, -beta, -alpha, !maximizingPlayer));
-            System.out.println("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
-            alpha = Math.max(alpha, score);
-            if (alpha >= beta) {
-                break;
+        if(maximizingPlayer) {
+            score = Integer.MIN_VALUE;
+            for(Integer m : c.getAvailableMoves()) {
+                score = Math.max(score, alphabeta(c.play(m), depth - 1, alpha, beta, false));
+
+                //System.out.println("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
+
+                if(score >= beta) {
+                    break;
+                }
+                alpha = Math.max(score, alpha);
+            }
+        } else {
+            score = Integer.MAX_VALUE;
+            for (Integer m : c.getAvailableMoves()) {
+                score = Math.min(score, alphabeta(c.play(m), depth - 1, alpha, beta, false));
+
+                //System.out.println("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
+
+                if (score <= alpha) {
+                    break;
+                }
+                beta = Math.min(score, beta);
             }
         }
         return score;
@@ -364,7 +362,7 @@ public class Connect4Logic implements Connect4 {
      */
     public int evaluate(Connect4Logic c) {
         int score = 0;
-        int size = 500;
+        int size = 400;
         for (int i = 0; i < size; i++) {
             score += random_game(c);
         }
