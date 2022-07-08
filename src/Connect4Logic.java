@@ -1,10 +1,10 @@
-import java.security.Key;
 import java.util.*;
 
 //TODO: Die Logging-Ausgabe erlaubt es, den Algorithmus in seiner Arbeitsweise nachzuvollziehen
 //TODO: DOKUMENTATION
 //TODO: TESTs fertigstellen
 //TODO: Zobrist hashing
+//TODO: figure out isShutdown not working as expected
 
 /**
  * @author Jerome Habanz
@@ -20,8 +20,6 @@ public class Connect4Logic implements Connect4 {
     final int COLUMNS = Connect4.COLUMNS;
     final int ROWS = Connect4.ROWS;
     final int difficulty = 2;
-
-    static HashMap<Integer, Integer> table = new HashMap<>();
 
     /**
      * The constructor initializes the bitboard, the moves array and the counter as a new game.
@@ -232,17 +230,14 @@ public class Connect4Logic implements Connect4 {
         return bitboard;
     }
 
-    public int hashCode() {
-        return Objects.hash(bitboard);
-    }
-
-
     /**
      * Check for any higher score and make it the best move.
      *
      * @return column of best move
      */
     public int bestMove() {
+        long startTime = System.nanoTime();
+
         Connect4Logic c = this;
         int column = 0;
         int bestScore = Integer.MIN_VALUE;
@@ -250,9 +245,9 @@ public class Connect4Logic implements Connect4 {
 
         for (Integer m : c.getAvailableMoves()) {
 
-            //score = evaluate(c.play(m)); // 85 ms //working
-            //score = minimax(c.play(m), difficulty, false); // 2331 ms //working
-            score = alphabeta(c.play(m), difficulty, Integer.MIN_VALUE, Integer.MAX_VALUE, false); // 103 ms //working?
+            //score = evaluate(c.play(m), false); // 65 ms //working
+            //score = minimax(c.play(m), difficulty, false); // 2183 ms //working
+            score = alphabeta(c.play(m), difficulty, Integer.MIN_VALUE, Integer.MAX_VALUE, false); // 1358 ms //working
 
             System.out.println("MOVE: " + m + " MAX: " + score);
 
@@ -263,6 +258,8 @@ public class Connect4Logic implements Connect4 {
         }
 
         System.out.println("Best move: " + column + " BestScore: " + bestScore + "\n");
+        System.out.println("Calculation Time: " + (System.nanoTime() - startTime) / 1000000 + " ms");
+
         return column;
     }
 
@@ -281,7 +278,7 @@ public class Connect4Logic implements Connect4 {
 
         //Abbruchbedingung
         if (depth == 0 || c.isGameOver()) {
-            return maximizingPlayer ? -evaluate(c) : evaluate(c);
+            return evaluate(c, maximizingPlayer);
         }
 
         if (maximizingPlayer) {
@@ -316,14 +313,8 @@ public class Connect4Logic implements Connect4 {
 
         Connect4Logic c = Connect4Logic.valueOf(connect4.bitboard, connect4.moves, connect4.counter);
 
-        if(depth == 0 || connect4.isGameOver()) {
-            int code = c.hashCode();
-            if(table != null && table.containsKey(code)) {
-                return table.get(code);
-            }
-            int v = maximizingPlayer ? -evaluate(c) : evaluate(c);
-            table.put(code, v);
-            return v;
+        if(depth == 0 || c.isGameOver()) {
+            return evaluate(c, maximizingPlayer);
         }
 
         if(maximizingPlayer) {
@@ -331,7 +322,7 @@ public class Connect4Logic implements Connect4 {
             for(Integer m : c.getAvailableMoves()) {
                 score = Math.max(score, alphabeta(c.play(m), depth - 1, alpha, beta, false));
 
-                //System.out.println("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
+                //System.out.println("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + " MAX: " + score);
 
                 if(score >= beta) {
                     break;
@@ -341,9 +332,9 @@ public class Connect4Logic implements Connect4 {
         } else {
             score = Integer.MAX_VALUE;
             for (Integer m : c.getAvailableMoves()) {
-                score = Math.min(score, alphabeta(c.play(m), depth - 1, alpha, beta, false));
+                score = Math.min(score, alphabeta(c.play(m), depth - 1, alpha, beta, true));
 
-                //System.out.println("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
+                //System.out.println("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + " MIN: " + score);
 
                 if (score <= alpha) {
                     break;
@@ -358,15 +349,16 @@ public class Connect4Logic implements Connect4 {
      * Evaluate the current board.
      *
      * @param c is the Connect4Logic object
+     * @param player is turning player
      * @return the score of the current board
      */
-    public int evaluate(Connect4Logic c) {
+    public int evaluate(Connect4Logic c, boolean player) {
         int score = 0;
         int size = 400;
         for (int i = 0; i < size; i++) {
             score += random_game(c);
         }
-        return score;
+        return player ? score : -score;
     }
 
     /**
@@ -375,17 +367,19 @@ public class Connect4Logic implements Connect4 {
      */
     public int random_game(Connect4Logic connect4) {
         Connect4Logic c = Connect4Logic.valueOf(connect4.bitboard, connect4.moves, connect4.counter);
-
-        boolean player = c.getPlayer();
+        //wenn X fängt an
+        boolean player = (c.counter & 1) == 0;
 
         while (!c.isGameOver()) {
             c = c.play(c.getAvailableMoves().get(new Random().nextInt(c.getAvailableMoves().size())));
         }
 
-        return switch (c.intIsGameOver()) {
-            case 1 -> player ? 1 : -1;
-            case 2 -> player ? -1 : 1;
-            default -> 0;
-        };
+        //wenn X gewinnt dann positiver score
+        if(isWin(c.bitboard[0])) {
+            return player ? 1 : -1;
+        } else if(isWin(c.bitboard[1])) {
+            return player ? -1 : 1;
+        }
+        return 0;
     }
 }
