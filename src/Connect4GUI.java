@@ -1,3 +1,5 @@
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
 import processing.core.PApplet;
 import processing.core.PFont;
 import util.Button;
@@ -17,8 +19,11 @@ public class Connect4GUI extends PApplet {
     boolean withAI;
     PFont font;
     ExecutorService buttonListener;
+    boolean calculating;
 
     public static void main(String[] args) {
+        BasicConfigurator.configure();
+        Connect4Logic.logger.setLevel(Level.OFF);
         PApplet.runSketch(new String[]{"Connect 4"}, new Connect4GUI());
     }
 
@@ -32,6 +37,7 @@ public class Connect4GUI extends PApplet {
 
         inMenu = true;
         withAI = false;
+        calculating = false;
 
         connect4 = new Connect4Logic();
     }
@@ -43,7 +49,6 @@ public class Connect4GUI extends PApplet {
         buttonPvP = new SelectButton(width / 2, height / 2 + 110, "PLAYER VS PLAYER", font);
         buttonUndo = new CircleButton(width - 50, height - 40, "UNDO", font);
         buttonMenu = new CircleButton(width - 150, height - 40, "MENU", font);
-
     }
 
     /**
@@ -117,7 +122,7 @@ public class Connect4GUI extends PApplet {
 
 
         //Draw the current player on mouse X
-        if(!buttonListener.isShutdown()) { //listener is not shutdown??
+        if (!calculating) { //listener is not shutdown??
             fill(connect4.getPlayer() ? color(243, 165, 157) : color(248, 225, 135));
 
             int height = Connect4.ROWS - (connect4.getNextHeight(mouseX / 100));
@@ -132,7 +137,7 @@ public class Connect4GUI extends PApplet {
      * Generate a thread detecting any mouse Collision with button while rendering the board
      */
     public void mouseClicked() {
-        if (!buttonListener.isShutdown()) {
+        if (!calculating) {
             buttonListener.submit(this::mouseOverAnyButton);
         }
     }
@@ -142,6 +147,7 @@ public class Connect4GUI extends PApplet {
      */
     public void mouseOverAnyButton() {
         try {
+            calculating = true;
             if (inMenu) {
                 if (buttonPvC.mouseOver(mouseX, mouseY)) {
                     inMenu = false;
@@ -169,6 +175,7 @@ public class Connect4GUI extends PApplet {
                     if (withAI) connect4 = connect4.play(connect4.bestMove());
                 }
             }
+            calculating = false;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
