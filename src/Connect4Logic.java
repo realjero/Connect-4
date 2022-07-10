@@ -273,23 +273,27 @@ public class Connect4Logic implements Connect4 {
      */
     public int minimax(Connect4Logic connect4, int depth, boolean maximizingPlayer) {
         int score;
-
         Connect4Logic c = Connect4Logic.valueOf(connect4.bitboard, connect4.moves, connect4.counter);
 
         if (depth == 0 || c.isGameOver()) {
+            // bewerte das aktuelle Spiel
             return evaluate(c, maximizingPlayer);
         }
 
-        if (maximizingPlayer) {
+        if (maximizingPlayer) {                         // wenn maximierender Spieler
             score = Integer.MIN_VALUE;
-            for (Integer m : c.getAvailableMoves()) {
+            for (Integer m : c.getAvailableMoves()) {   // spiele jeden möglichen Zug
+                // spiel den Zug
                 score = Math.max(score, minimax(c.play(m), depth - 1, false));
+                // speicher den besten Zug für max
                 //logger.debug("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
             }
-        } else {
+        } else {                                        // wenn minimierender Spieler
             score = Integer.MAX_VALUE;
-            for (Integer m : c.getAvailableMoves()) {
+            for (Integer m : c.getAvailableMoves()) {   // spiele jeden möglichen Zug
+                // spiel den Zug
                 score = Math.min(score, minimax(c.play(m), depth - 1, true));
+                // speicher den besten Zug für min
                 //logger.debug("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
             }
         }
