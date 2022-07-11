@@ -23,7 +23,7 @@ public class Connect4GUI extends PApplet {
 
     public static void main(String[] args) {
         BasicConfigurator.configure();
-        Connect4Logic.logger.setLevel(Level.OFF);
+        //Connect4Logic.logger.setLevel(Level.OFF);
         PApplet.runSketch(new String[]{"Connect 4"}, new Connect4GUI());
     }
 
