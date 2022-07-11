@@ -2,9 +2,6 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 
-//TODO: DOKUMENTATION
-//TODO: TESTs fertigstellen
-
 /**
  * @author Jerome Habanz
  */
@@ -118,6 +115,7 @@ public class Connect4Logic implements Connect4 {
      * @return 0 if game is not over, 1 if player 0 wins, 2 if player 1 wins, 3 if tied.
      */
     public int intIsGameOver() {
+        if (counter <= 6) return 0;
         if ((counter & 1) == 1 && isWin(bitboard[0])) return 1; //X wins
         if ((counter & 1) == 0 && isWin(bitboard[1])) return 2; //O wins
         if ((bitboard[0] ^ bitboard[1]) == 0b0111111_0111111_0111111_0111111_0111111_0111111_0111111L) return 3; //Tied
@@ -276,24 +274,19 @@ public class Connect4Logic implements Connect4 {
         Connect4Logic c = Connect4Logic.valueOf(connect4.bitboard, connect4.moves, connect4.counter);
 
         if (depth == 0 || c.isGameOver()) {
-            // bewerte das aktuelle Spiel
             return evaluate(c, maximizingPlayer);
         }
 
-        if (maximizingPlayer) {                         // wenn maximierender Spieler
+        if (maximizingPlayer) {
             score = Integer.MIN_VALUE;
-            for (Integer m : c.getAvailableMoves()) {   // spiele jeden möglichen Zug
-                // spiel den Zug
+            for (Integer m : c.getAvailableMoves()) {
                 score = Math.max(score, minimax(c.play(m), depth - 1, false));
-                // speicher den besten Zug für max
                 //logger.debug("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
             }
-        } else {                                        // wenn minimierender Spieler
+        } else {
             score = Integer.MAX_VALUE;
-            for (Integer m : c.getAvailableMoves()) {   // spiele jeden möglichen Zug
-                // spiel den Zug
+            for (Integer m : c.getAvailableMoves()) {
                 score = Math.min(score, minimax(c.play(m), depth - 1, true));
-                // speicher den besten Zug für min
                 //logger.debug("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + (maximizingPlayer ? " MAX: " : " MIN : ") + score);
             }
         }
@@ -324,7 +317,6 @@ public class Connect4Logic implements Connect4 {
             score = Integer.MIN_VALUE;
             for (Integer m : c.getAvailableMoves()) {
                 score = Math.max(score, alphabeta(c.play(m), depth - 1, alpha, beta, false));
-
                 //logger.debug("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + " MAX: " + score);
 
                 if (score >= beta) {
@@ -336,7 +328,6 @@ public class Connect4Logic implements Connect4 {
             score = Integer.MAX_VALUE;
             for (Integer m : c.getAvailableMoves()) {
                 score = Math.min(score, alphabeta(c.play(m), depth - 1, alpha, beta, true));
-
                 //logger.debug("\t".repeat(difficulty + 1 - depth) + "MOVE: " + m + " MIN: " + score);
 
                 if (score <= alpha) {
