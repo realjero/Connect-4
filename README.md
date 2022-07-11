@@ -57,3 +57,27 @@ in der Konsole ausgibt.
 Das Logging Protokoll ist in der Lage, anzuzeigen welche Schritte der Algorithmus in welcher Zeit durchgeführt hat.
 
 <img src="https://i.ibb.co/nmJ5c5Z/image.png">
+
+### Quellen
+
+* https://ssaurel.medium.com/creating-a-connect-four-game-in-java-f45356f1d6ba
+* https://codereview.stackexchange.com/questions/100917/connect-four-game-in-java
+* https://github.com/brendanator/connect4
+* https://github.com/denkspuren/BitboardC4/blob/master/BitboardDesign.md
+* https://stackoverflow.com/questions/571960/disabling-log4j-output-in-java
+* https://stackoverflow.com/questions/42338187/log-file-not-generating-in-log4j
+* https://www.tutorialspoint.com/log4j/log4j_logging_files.htm
+* https://www.javatpoint.com/log4j-example
+* https://docs.google.com/presentation/d/11cWA5c-Vvmop2DpBALqzHHdndSAyBuuiyfv7tLyvgFk/edit#slide=id.g131c9cb927_0_110
+* https://www.baeldung.com/java-util-concurrent
+* https://winterbe.com/posts/2015/04/07/java8-concurrency-tutorial-thread-executor-examples/
+* https://www.vogella.com/tutorials/JavaConcurrency/article.html#:~:text=Concurrency%20is%20the%20ability%20to,the%20interactivity%20of%20the%20program
+  .
+* https://docs.oracle.com/javase/tutorial/essential/concurrency/collections.html
+* https://www.youtube.com/watch?v=CjldSexfOuU
+* https://docs.oracle.com/javase/tutorial/essential/concurrency/executors.html
+* https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-3-tic-tac-toe-ai-finding-optimal-move/
+* https://www.baeldung.com/java-bitwise-operators#:~:text=Bitwise%20operators%20work%20on%20a,and%20the%20result%20is%20calculated
+* https://en.wikipedia.org/wiki/Minimax
+* https://en.wikipedia.org/wiki/Negamax
+* https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning
