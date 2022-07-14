@@ -37,8 +37,6 @@ public class Connect4GUI extends PApplet {
         inMenu = true;
         withAI = false;
         calculating = false;
-
-        connect4 = new Connect4Logic();
     }
 
     /**

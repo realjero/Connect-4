@@ -112,7 +112,7 @@ public class Connect4Logic implements Connect4 {
     }
 
     /**
-     * @return 0 if game is not over, 1 if player 0 wins, 2 if player 1 wins, 3 if tied.
+     * @return 0 if game is not over, 1 if player 'X' wins, 'O' if player 1 wins, 3 if tied.
      */
     public int intIsGameOver() {
         if (counter <= 6) return 0;
