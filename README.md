@@ -56,6 +56,8 @@ Das Logging Protokoll basiert auf Log4J. Es wird ein Logger erstellt, der die Lo
 in der Konsole ausgibt.
 Das Logging Protokoll ist in der Lage, anzuzeigen welche Schritte der Algorithmus in welcher Zeit durchgeführt hat.
 
+Die Ausgabe zeigt, dass der Bot den Zug gemacht hat, der am höchsten bewertet wurde.
+
 <img src="https://i.ibb.co/nmJ5c5Z/image.png">
 
 ### Quellen
