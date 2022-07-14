@@ -1,5 +1,4 @@
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
 import processing.core.PApplet;
 import processing.core.PFont;
 import util.Button;
@@ -42,13 +41,16 @@ public class Connect4GUI extends PApplet {
         connect4 = new Connect4Logic();
     }
 
+    /**
+     * Setup the game
+     */
     public void setup() {
         background(color(44, 62, 80));
         font = createFont("files/Oswald-Bold.ttf", 24);
         buttonPvC = new SelectButton(width / 2, height / 2, "PLAYER VS COMPUTER", font);
         buttonPvP = new SelectButton(width / 2, height / 2 + 110, "PLAYER VS PLAYER", font);
-        buttonUndo = new CircleButton(width - 50, height - 40, "UNDO", font);
-        buttonMenu = new CircleButton(width - 150, height - 40, "MENU", font);
+        buttonUndo = new CircleButton(width - 50, height - 50, "UNDO", font);
+        buttonMenu = new CircleButton(width - 150, height - 50, "MENU", font);
     }
 
     /**
@@ -100,7 +102,7 @@ public class Connect4GUI extends PApplet {
                 case 3 -> "TIE";
                 default -> "";
             };
-            text(label, width / 2 - textWidth(label) / 2, height - textDescent());
+            text(label, width / 2 - textWidth(label) / 2, height - 50 + textDescent());
         }
 
 
@@ -146,8 +148,8 @@ public class Connect4GUI extends PApplet {
      * Check for any mouse collision with buttons
      */
     public void mouseOverAnyButton() {
+        calculating = true;
         try {
-            calculating = true;
             if (inMenu) {
                 if (buttonPvC.mouseOver(mouseX, mouseY)) {
                     inMenu = false;
@@ -175,9 +177,10 @@ public class Connect4GUI extends PApplet {
                     if (withAI) connect4 = connect4.play(connect4.bestMove());
                 }
             }
-            calculating = false;
+
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            Connect4Logic.logger.info(e.getMessage());
         }
+        calculating = false;
     }
 }

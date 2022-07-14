@@ -16,7 +16,7 @@ public class Connect4Logic implements Connect4 {
     final int COLUMNS = Connect4.COLUMNS;
     final int ROWS = Connect4.ROWS;
     final int difficulty = 2;
-    static Logger logger = Logger.getLogger(Connect4.class.getName());
+    static Logger logger = Logger.getLogger(Connect4Logic.class.getName());
 
     /**
      * The constructor initializes the bitboard, the moves array and the counter as a new game.
@@ -136,6 +136,8 @@ public class Connect4Logic implements Connect4 {
      * @return state of piece at given row and column
      */
     public int getBoard(int column, int row) {
+        if (column < 0 || column >= COLUMNS) throw new IllegalArgumentException("Invalid column");
+        if (row < 0 || row >= ROWS) throw new IllegalArgumentException("Invalid row");
         long pos = (long) column * (ROWS + 1) + ROWS - 1 - row;
         if (((bitboard[0] >> pos) & 1) == 1) return 2;
         if (((bitboard[1] >> pos) & 1) == 1) return 1;
@@ -228,6 +230,7 @@ public class Connect4Logic implements Connect4 {
         return bitboard;
     }
 
+
     /**
      * Check for any higher score and make it the best move.
      *
@@ -295,7 +298,7 @@ public class Connect4Logic implements Connect4 {
     }
 
     /**
-     * Based on Negamax algorithm with alpha-beta pruning.
+     * Based on MiniMax algorithm with alpha-beta pruning.
      *
      * @param connect4         is the Connect4Logic object
      * @param depth            maximum depth of the tree
@@ -377,4 +380,25 @@ public class Connect4Logic implements Connect4 {
         }
         return 0;
     }
+}
+
+interface Connect4 {
+    int COLUMNS = 7;
+    int ROWS = 6;
+
+    Connect4Logic play(int column);
+
+    Connect4Logic undoMove();
+
+    int bestMove();
+
+    int intIsGameOver();
+
+    boolean isGameOver();
+
+    int getBoard(int row, int column);
+
+    boolean getPlayer();
+
+    int getNextHeight(int column);
 }
